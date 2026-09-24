@@ -1,0 +1,243 @@
+// Prisma schema for Mitera Health HMO Broker Relationship Management (BRM) System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  BROKER
+  HMO_ADMIN
+}
+
+enum BrokerType {
+  INDIVIDUAL
+  CORPORATE
+  AGGREGATOR
+  BANCASSURANCE
+}
+
+enum OnboardingStatus {
+  DRAFT
+  PENDING_VERIFICATION
+  IN_REVIEW
+  ACTIVE
+  REJECTED
+  SUSPENDED
+}
+
+enum TierLevel {
+  RETAIL_AGENT
+  CORPORATE_BROKER
+  AGGREGATOR
+  ELITE_PARTNER
+}
+
+enum VerificationStatus {
+  NOT_STARTED
+  PENDING
+  VERIFIED
+  FAILED
+}
+
+enum DealStage {
+  LEAD
+  PRICING_REVIEW
+  PROPOSAL_SENT
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum HospitalTier {
+  TIER_1_BASIC
+  TIER_2_STANDARD
+  TIER_3_PREMIUM
+  TIER_4_EXECUTIVE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(BROKER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  broker Broker?
+}
+
+model Broker {
+  id                  String           @id @default(uuid())
+  userId              String           @unique
+  user                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brokerCode          String?          @unique // e.g. HMO-BRK-1024
+  brokerType          BrokerType       @default(CORPORATE)
+  companyName         String
+  rcNumber            String?
+  naicomLicenseNumber String?
+  naicomExpiryDate    DateTime?
+  nhiaAccreditationNo String?
+  taxIdNumber         String?
+  vatCompliant        Boolean          @default(false)
+
+  // Contact & Payout Details
+  nin                 String?
+  bvn                 String?
+  bankName            String?
+  accountNumber       String?
+  accountName         String?
+  phone               String
+  state               String
+  lga                 String
+  address             String
+
+  // Compliance & Portal Status
+  status              OnboardingStatus @default(DRAFT)
+  tierLevel           TierLevel        @default(RETAIL_AGENT)
+  riskScore           Int              @default(0) // 0-100 risk score
+  ndpaConsent         Boolean          @default(false)
+  rejectionReason     String?
+
+  // Quiz & Certification
+  quizPassed          Boolean          @default(false)
+  quizScore           Int?
+  certifiedAt         DateTime?
+
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  documents           Document[]
+  verifications       KYCVerification[]
+  engagements         Engagement[]
+  quoteDeals          QuoteDeal[]
+  commissions         Commission[]
+}
+
+model Document {
+  id           String   @id @default(uuid())
+  brokerId     String
+  broker       Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  docType      String   // CAC_CERT, NAICOM_LICENSE, TAX_CLEARANCE, INDEMNITY_COVER, BANK_LETTER, PASSPORT_PHOTO, GUARANTOR_FORM
+  fileUrl      String
+  fileName     String
+  fileSize     Int
+  mimeType     String
+  isVerified   Boolean  @default(false)
+  watermarked  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model KYCVerification {
+  id               String             @id @default(uuid())
+  brokerId         String
+  broker           Broker             @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  verificationType String             // CAC, NIMC_NIN, PAYSTACK_BVN, NUBAN
+  status           VerificationStatus @default(PENDING)
+  rawResponse      String?            // JSON response string
+  verifiedAt       DateTime?
+  createdAt        DateTime           @default(now())
+}
+
+model Plan {
+  id              String       @id @default(uuid())
+  code            String       @unique // e.g., MITERA-BRONZE, MITERA-GOLD
+  name            String       // e.g. Mitera Retail Care, Mitera Corporate Gold
+  category        String       // Corporate, SME, Retail, Elderly, Maternity
+  description     String
+  annualBaseRate  Float
+  minLives        Int          @default(1)
+  hospitalTier    HospitalTier @default(TIER_2_STANDARD)
+  featuresJson    String       // Stored JSON string of benefits
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  rateCards       RateCard[]
+}
+
+model RateCard {
+  id                String    @id @default(uuid())
+  planId            String
+  plan              Plan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  tierLevel         TierLevel @default(RETAIL_AGENT)
+  discountPercentage Float    @default(0.0) // Additional tier discount %
+  customBasePrice   Float?
+  createdAt         DateTime  @default(now())
+}
+
+model Hospital {
+  id          String       @id @default(uuid())
+  name        String
+  state       String
+  lga         String
+  address     String
+  tier        HospitalTier @default(TIER_2_STANDARD)
+  phone       String
+  email       String?
+  services    String       // Comma separated services
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+}
+
+model Engagement {
+  id          String   @id @default(uuid())
+  brokerId    String
+  broker      Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  title       String
+  channel     String   // CALL, MEETING, EMAIL, PITCH
+  notes       String
+  loggedBy    String   // HMO Staff Name or Broker Name
+  scheduledAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model QuoteDeal {
+  id                 String    @id @default(uuid())
+  brokerId           String
+  broker             Broker    @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  companyName        String
+  contactPerson      String
+  contactEmail       String
+  contactPhone       String
+  stage              DealStage @default(LEAD)
+  totalLives         Int
+  breakoutJson       String    // JSON breakdown of plan selection & employee counts
+  totalPremium       Float
+  discountApplied    Float     @default(0)
+  proposalPdfUrl     String?
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  commissions        Commission[]
+}
+
+model Commission {
+  id              String           @id @default(uuid())
+  brokerId        String
+  broker          Broker           @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  quoteDealId     String?
+  quoteDeal       QuoteDeal?       @relation(fields: [quoteDealId], references: [id], onDelete: SetNull)
+  grossPremium    Float
+  commissionRate  Float            // e.g. 10.0 for 10%
+  grossCommission Float
+  whtRate         Float            // 5.0 for corporate (5%), 10.0 for individual
+  whtAmount       Float
+  netPayout       Float
+  status          CommissionStatus @default(PENDING)
+  payoutRef       String?
+  paidAt          DateTime?
+  createdAt       DateTime         @default(now())
+}
