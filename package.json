@@ -5,16 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "db:push": "prisma db push",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "next lint",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "5.18.0",
-    "@supabase/supabase-js": "^2.117.1",
     "clsx": "^2.1.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
