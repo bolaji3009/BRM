@@ -9,12 +9,16 @@ export const BRAND = {
   phone: "+234 201 887 0150",
   address: "22A, Bamishile Street, Off Allen Avenue, Ikeja, Lagos, Nigeria",
   colors: {
-    primary: "#0e7490", // Teal 700
-    primaryDark: "#155e75", // Teal 800
-    primaryLight: "#06b6d4", // Cyan 500
-    accent: "#10b981", // Emerald 500
-    background: "#f8fafc", // Slate 50
-    navy: "#0f172a", // Slate 900
+    oasis: "#009BA9",         // Primary Teal / Cyan
+    dreamlessSleep: "#111111",// Dark Black
+    mercury: "#EBEBEB",       // Soft White / Gray
+    bankVault: "#737373",     // Medium Gray
+    soothingSapphire: "#3080E2", // Sapphire Blue
+    ultrapurpleMerge: "#5B4E96", // Purple Accent
+    deadPixel: "#3C3C3C",     // Charcoal Dark
+    darkSoul: "#131F4D",      // Deep Navy
+    azure: "#037BFF",         // Bright Blue
+    safetyOrange: "#FF6900",  // Accent Orange
   },
   logo: {
     symbol: "🏥",
