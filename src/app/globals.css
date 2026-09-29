@@ -1,19 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --oasis: #009BA9;
-  --dreamless-sleep: #111111;
-  --mercury: #EBEBEB;
-  --bank-vault: #737373;
-  --soothing-sapphire: #3080E2;
-  --ultrapurple-merge: #5B4E96;
-  --dead-pixel: #3C3C3C;
-  --dark-soul: #131F4D;
-  --azure: #037BFF;
-  --safety-orange: #FF6900;
+  /* Turquoise / Teal Color Codes */
+  --primary-teal: #1ABC9C;
+  --primary-teal-medium: #48C9B0;
+  --primary-teal-light: #76D7C4;
+  --primary-teal-lighter: #A3E4D7;
+
+  /* Alizarin Coral / Rose Color Codes */
+  --coral-base: #F5B7B1;
+  --coral-light: #FDEDEC;
+  --coral-medium: #FADBD8;
+  --coral-dark: #F1948A;
+
+  /* Theme Accents */
+  --bg-slate: #F8FAFC;
+  --text-dark: #111111;
 }
 
 body {
-  background-color: #F8FAFC;
-  color: var(--dreamless-sleep);
+  background-color: var(--bg-slate);
+  color: var(--text-dark);
 }
