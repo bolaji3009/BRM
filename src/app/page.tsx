@@ -132,7 +132,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         {/* Navigation Tabs for Broker View */}
         {currentRole === 'BROKER' && (
-          <div className="bg-white p-2 rounded-2xl shadow-xs border border-slate-200 mb-6 flex items-center space-x-2 overflow-x-auto">
+          <div className="bg-[#62c6d3] p-2 rounded-2xl shadow-xs border border-[#52b6c3] mb-6 flex items-center space-x-2 overflow-x-auto">
             {[
               { id: 'ONBOARDING', label: '1. KYC Onboarding', icon: Building2 },
               { id: 'TRAINING', label: '2. Ethics Quiz & Cert', icon: GraduationCap },
