@@ -1,24 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  /* Turquoise / Teal Color Codes */
-  --primary-teal: #1ABC9C;
-  --primary-teal-medium: #48C9B0;
-  --primary-teal-light: #76D7C4;
-  --primary-teal-lighter: #A3E4D7;
+@theme {
+  /* Overriding Teal theme palette with custom Turquoise HTML color codes */
+  --color-teal-50: #A3E4D7;
+  --color-teal-100: #A3E4D7;
+  --color-teal-200: #76D7C4;
+  --color-teal-300: #76D7C4;
+  --color-teal-400: #48C9B0;
+  --color-teal-500: #48C9B0;
+  --color-teal-600: #1ABC9C;
+  --color-teal-700: #1ABC9C;
+  --color-teal-800: #16A085;
+  --color-teal-900: #111111;
 
-  /* Alizarin Coral / Rose Color Codes */
-  --coral-base: #F5B7B1;
-  --coral-light: #FDEDEC;
-  --coral-medium: #FADBD8;
-  --coral-dark: #F1948A;
+  /* Overriding Emerald/Accent theme palette with Alizarin Coral HTML color codes */
+  --color-emerald-50: #FDEDEC;
+  --color-emerald-100: #FADBD8;
+  --color-emerald-200: #F5B7B1;
+  --color-emerald-300: #F5B7B1;
+  --color-emerald-400: #F1948A;
+  --color-emerald-500: #F1948A;
+  --color-emerald-600: #1ABC9C;
+  --color-emerald-700: #16A085;
 
-  /* Theme Accents */
-  --bg-slate: #F8FAFC;
-  --text-dark: #111111;
+  /* Custom Brand Accent Tokens */
+  --color-turquoise-base: #1ABC9C;
+  --color-turquoise-medium: #48C9B0;
+  --color-turquoise-light: #76D7C4;
+  --color-turquoise-lighter: #A3E4D7;
+
+  --color-coral-base: #F5B7B1;
+  --color-coral-light: #FDEDEC;
+  --color-coral-medium: #FADBD8;
+  --color-coral-dark: #F1948A;
 }
 
 body {
-  background-color: var(--bg-slate);
-  color: var(--text-dark);
+  background-color: #F8FAFC;
+  color: #111111;
 }
