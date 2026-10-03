@@ -15,15 +15,25 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { BrokerData, DocumentData, CommissionData, QuoteDealData } from '@/lib/mockDb';
+import { BrokerData, DocumentData, CommissionData, QuoteDealData, PlanData, HospitalData, EngagementData } from '@/lib/mockDb';
+import { QuoteGenerator } from '@/components/QuoteGenerator';
+import { HospitalSearchModule } from '@/components/HospitalSearchModule';
+import { PipelineTracker } from '@/components/PipelineTracker';
+import { CommissionLedger } from '@/components/CommissionLedger';
 
 interface AdminDashboardProps {
   brokers: BrokerData[];
   documents: DocumentData[];
   commissions: CommissionData[];
   deals: QuoteDealData[];
+  plans: PlanData[];
+  hospitals: HospitalData[];
+  engagements: EngagementData[];
   onApproveBroker: (brokerId: string, tier: any) => void;
   onRejectBroker: (brokerId: string, reason: string) => void;
+  onCreateDeal?: (deal: Partial<QuoteDealData>) => void;
+  onAddEngagement?: (eng: Partial<EngagementData>) => void;
+  onUpdateDealStage?: (dealId: string, stage: any) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -31,10 +41,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   documents,
   commissions,
   deals,
+  plans,
+  hospitals,
+  engagements,
   onApproveBroker,
   onRejectBroker,
+  onCreateDeal,
+  onAddEngagement,
+  onUpdateDealStage,
 }) => {
-  const [activeTab, setActiveTab] = useState<'QUEUE' | 'BROKERS' | 'AUDIT'>('QUEUE');
+  const [activeTab, setActiveTab] = useState<'QUEUE' | 'BROKERS' | 'QUOTE' | 'HOSPITALS' | 'PIPELINE' | 'COMMISSIONS'>('QUEUE');
   const [selectedBroker, setSelectedBroker] = useState<BrokerData | null>(brokers[1] || brokers[0] || null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [selectedTier, setSelectedTier] = useState<string>('CORPORATE_BROKER');
@@ -97,16 +113,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="flex items-center space-x-3">
             <button
               onClick={exportNhiaReturnsCsv}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-2 shrink-0"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-2 shrink-0"
             >
               <Download className="w-4 h-4" />
-              <span>Export NHIA Monthly Returns CSV</span>
+              <span>Export NHIA Returns CSV</span>
             </button>
 
-            <div className="flex items-center space-x-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
+            <div className="flex items-center space-x-1 bg-slate-800 p-1 rounded-xl border border-slate-700 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('QUEUE')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 ${
                   activeTab === 'QUEUE' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -114,11 +130,43 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </button>
               <button
                 onClick={() => setActiveTab('BROKERS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 ${
                   activeTab === 'BROKERS' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 All Brokers ({brokers.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('QUOTE')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 ${
+                  activeTab === 'QUOTE' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Quote Generator
+              </button>
+              <button
+                onClick={() => setActiveTab('HOSPITALS')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 ${
+                  activeTab === 'HOSPITALS' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Hospitals Directory
+              </button>
+              <button
+                onClick={() => setActiveTab('PIPELINE')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 ${
+                  activeTab === 'PIPELINE' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                CRM Pipeline
+              </button>
+              <button
+                onClick={() => setActiveTab('COMMISSIONS')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 ${
+                  activeTab === 'COMMISSIONS' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Commissions & Wallet
               </button>
             </div>
           </div>
@@ -239,16 +287,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
             ) : null}
           </div>
-        ) : (
+        ) : activeTab === 'BROKERS' ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
                   <th className="pb-3">Broker Code</th>
                   <th className="pb-3">Broker Name</th>
+                  <th className="pb-3">Broker Type</th>
                   <th className="pb-3">NAICOM License</th>
                   <th className="pb-3">Tier Level</th>
-                  <th className="pb-3">Quiz Certification</th>
                   <th className="pb-3">Status</th>
                 </tr>
               </thead>
@@ -257,18 +305,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <tr key={b.id} className="hover:bg-slate-50">
                     <td className="py-3.5 font-mono font-bold text-teal-700">{b.brokerCode || 'N/A'}</td>
                     <td className="py-3.5 font-bold text-slate-900">{b.companyName}</td>
+                    <td className="py-3.5 font-semibold text-slate-600">{b.brokerType}</td>
                     <td className="py-3.5 font-mono text-slate-600">{b.naicomLicenseNumber}</td>
                     <td className="py-3.5 font-semibold text-slate-800">{b.tierLevel}</td>
-                    <td className="py-3.5">
-                      {b.quizPassed ? (
-                        <span className="text-emerald-700 font-bold flex items-center space-x-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Passed ({b.quizScore}%)</span>
-                        </span>
-                      ) : (
-                        <span className="text-slate-400">Pending</span>
-                      )}
-                    </td>
                     <td className="py-3.5">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
                         {b.status}
@@ -279,6 +318,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </tbody>
             </table>
           </div>
+        ) : activeTab === 'QUOTE' ? (
+          <QuoteGenerator
+            plans={plans}
+            broker={brokers[0]}
+            onCreateDeal={onCreateDeal || (() => {})}
+          />
+        ) : activeTab === 'HOSPITALS' ? (
+          <HospitalSearchModule hospitals={hospitals} />
+        ) : activeTab === 'PIPELINE' ? (
+          <PipelineTracker
+            deals={deals}
+            engagements={engagements}
+            broker={brokers[0]}
+            onAddEngagement={onAddEngagement || (() => {})}
+            onUpdateDealStage={onUpdateDealStage || (() => {})}
+          />
+        ) : (
+          <CommissionLedger
+            commissions={commissions}
+            broker={brokers[0]}
+          />
         )}
       </div>
     </div>

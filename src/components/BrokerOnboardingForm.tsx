@@ -32,7 +32,6 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
     taxIdNumber: broker.taxIdNumber || '',
     vatCompliant: broker.vatCompliant || false,
     nin: broker.nin || '',
-    bvn: broker.bvn || '',
     bankName: broker.bankName || 'Guaranty Trust Bank (GTBank)',
     accountNumber: broker.accountNumber || '',
     accountName: broker.accountName || '',
@@ -47,8 +46,8 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
   const [verified, setVerified] = useState<{ [key: string]: boolean }>({
     cac: !!broker.rcNumber,
     naicom: !!broker.naicomLicenseNumber,
-    bvn: !!broker.bvn,
     nin: !!broker.nin,
+    nuban: !!broker.accountNumber,
   });
 
   const [uploadedDocs, setUploadedDocs] = useState<{ [key: string]: string }>({
@@ -73,7 +72,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
     setTimeout(() => {
       setVerifying((prev) => ({ ...prev, [type]: false }));
       setVerified((prev) => ({ ...prev, [type]: true }));
-      if (type === 'bvn' && !formData.accountName) {
+      if (type === 'nuban' && !formData.accountName) {
         setFormData((prev) => ({ ...prev, accountName: formData.companyName || 'APEX INSURANCE BROKERS LTD' }));
       }
     }, 1200);
@@ -137,11 +136,11 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-8">
-        {/* Step 1: Corporate Profile & Registration */}
+        {/* Step 1: Broker Profile & Entity Details */}
         <div>
           <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-2 border-b border-slate-200">
             <Building2 className="w-5 h-5 text-teal-600" />
-            <span>1. Corporate Profile & Entity Details</span>
+            <span>1. {formData.brokerType === 'INDIVIDUAL' ? 'Individual Agent Profile & Licensing' : 'Corporate Profile & Entity Details'}</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -161,42 +160,46 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Company Registered Name</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                {formData.brokerType === 'INDIVIDUAL' ? 'Agent Full Name' : 'Company Registered Name'}
+              </label>
               <input
                 type="text"
                 name="companyName"
                 value={formData.companyName}
                 onChange={handleInputChange}
                 required
-                placeholder="e.g. Apex Insurance Brokers Ltd"
+                placeholder={formData.brokerType === 'INDIVIDUAL' ? 'e.g. Babajide Chukwuma' : 'e.g. Apex Insurance Brokers Ltd'}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">CAC Registration (RC Number)</label>
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  name="rcNumber"
-                  value={formData.rcNumber}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="RC-1294821"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleVerify('cac')}
-                  className="px-3 py-2 bg-slate-800 text-white text-xs font-semibold rounded-lg hover:bg-slate-700 flex items-center shrink-0"
-                >
-                  {verifying.cac ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : verified.cac ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : 'Verify CAC'}
-                </button>
+            {formData.brokerType !== 'INDIVIDUAL' && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">CAC Registration (RC Number)</label>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    name="rcNumber"
+                    value={formData.rcNumber}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="RC-1294821"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleVerify('cac')}
+                    className="px-3 py-2 bg-slate-800 text-white text-xs font-semibold rounded-lg hover:bg-slate-700 flex items-center shrink-0"
+                  >
+                    {verifying.cac ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : verified.cac ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : 'Verify CAC'}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">NAICOM Broker License Number</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">NAICOM License Number</label>
               <div className="flex space-x-2">
                 <input
                   type="text"
@@ -243,7 +246,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
           </div>
         </div>
 
-        {/* Step 2: Tax, BVN & Bank Payout Details */}
+        {/* Step 2: Tax & NUBAN Payout Details */}
         <div>
           <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-2 border-b border-slate-200">
             <UserCheck className="w-5 h-5 text-teal-600" />
@@ -251,28 +254,6 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Bank Verification Number (BVN)</label>
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  name="bvn"
-                  value={formData.bvn}
-                  onChange={handleInputChange}
-                  maxLength={11}
-                  placeholder="22114455667"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none font-mono"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleVerify('bvn')}
-                  className="px-3 py-2 bg-teal-700 text-white text-xs font-semibold rounded-lg hover:bg-teal-800 flex items-center shrink-0"
-                >
-                  {verifying.bvn ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : verified.bvn ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" /> : 'Validate NUBAN'}
-                </button>
-              </div>
-            </div>
-
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">Bank Name</label>
               <select
@@ -292,15 +273,24 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">NUBAN Account Number</label>
-              <input
-                type="text"
-                name="accountNumber"
-                value={formData.accountNumber}
-                onChange={handleInputChange}
-                maxLength={10}
-                placeholder="0123456789"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none font-mono"
-              />
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  name="accountNumber"
+                  value={formData.accountNumber}
+                  onChange={handleInputChange}
+                  maxLength={10}
+                  placeholder="0123456789"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleVerify('nuban')}
+                  className="px-3 py-2 bg-teal-700 text-white text-xs font-semibold rounded-lg hover:bg-teal-800 flex items-center shrink-0"
+                >
+                  {verifying.nuban ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : verified.nuban ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" /> : 'Validate NUBAN'}
+                </button>
+              </div>
             </div>
 
             <div>
@@ -310,7 +300,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                 name="accountName"
                 value={formData.accountName}
                 readOnly
-                placeholder="Auto-validated via Paystack/Dojah NUBAN"
+                placeholder="Auto-validated via NUBAN"
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-sm font-semibold cursor-not-allowed"
               />
             </div>
@@ -342,52 +332,54 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
           </div>
         </div>
 
-        {/* Step 3: Required Regulatory Uploads */}
-        <div>
-          <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-2 border-b border-slate-200">
-            <FileCheck2 className="w-5 h-5 text-teal-600" />
-            <span>3. Audit Documents Upload & Watermarking</span>
-          </h3>
+        {/* Step 3: Required Regulatory Uploads - Only shown for Corporate/Aggregator/Bancassurance */}
+        {formData.brokerType !== 'INDIVIDUAL' && (
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-2 border-b border-slate-200">
+              <FileCheck2 className="w-5 h-5 text-teal-600" />
+              <span>3. Audit Documents Upload & Watermarking</span>
+            </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            {[
-              { key: 'cacCert', label: 'CAC Certificate of Incorporation (Form CAC 1.1)' },
-              { key: 'naicomLicense', label: 'Valid NAICOM Broker License Copy' },
-              { key: 'taxClearance', label: 'FIRS Tax Clearance Certificate (TCC)' },
-              { key: 'indemnityCover', label: 'Professional Indemnity Insurance Cover Policy' },
-            ].map((doc) => (
-              <div key={doc.key} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-                <div>
-                  <p className="text-xs font-bold text-slate-800">{doc.label}</p>
-                  {uploadedDocs[doc.key] ? (
-                    <div className="flex items-center space-x-2 mt-2 text-xs text-emerald-700 font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span className="truncate max-w-[200px]">{uploadedDocs[doc.key]}</span>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-slate-500 mt-1">PDF or High-Res Image (Max 5MB)</p>
-                  )}
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+              {[
+                { key: 'cacCert', label: 'CAC Certificate of Incorporation (Form CAC 1.1)' },
+                { key: 'naicomLicense', label: 'Valid NAICOM Broker License Copy' },
+                { key: 'taxClearance', label: 'FIRS Tax Clearance Certificate (TCC)' },
+                { key: 'indemnityCover', label: 'Professional Indemnity Insurance Cover Policy' },
+              ].map((doc) => (
+                <div key={doc.key} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-slate-800">{doc.label}</p>
+                    {uploadedDocs[doc.key] ? (
+                      <div className="flex items-center space-x-2 mt-2 text-xs text-emerald-700 font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span className="truncate max-w-[200px]">{uploadedDocs[doc.key]}</span>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-500 mt-1">PDF or High-Res Image (Max 5MB)</p>
+                    )}
+                  </div>
 
-                <div className="mt-3 flex items-center justify-between">
-                  <label className="cursor-pointer inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 shadow-sm">
-                    <Upload className="w-3.5 h-3.5 text-teal-600" />
-                    <span>Upload Document</span>
-                    <input
-                      type="file"
-                      accept=".pdf,.png,.jpeg,.jpg"
-                      className="hidden"
-                      onChange={(e) => handleFileUpload(doc.key, e)}
-                    />
-                  </label>
-                  <span className="text-[10px] bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded">
-                    Mitera Watermarked
-                  </span>
+                  <div className="mt-3 flex items-center justify-between">
+                    <label className="cursor-pointer inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 shadow-sm">
+                      <Upload className="w-3.5 h-3.5 text-teal-600" />
+                      <span>Upload Document</span>
+                      <input
+                        type="file"
+                        accept=".pdf,.png,.jpeg,.jpg"
+                        className="hidden"
+                        onChange={(e) => handleFileUpload(doc.key, e)}
+                      />
+                    </label>
+                    <span className="text-[10px] bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded">
+                      Mitera Watermarked
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* NDPA 2023 Consent & Submission */}
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-5">

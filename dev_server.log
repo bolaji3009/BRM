@@ -5,9 +5,110 @@
 ▲ Next.js 16.3.6 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
-- Environments: .env
-✓ Ready in 553ms
-✓ Running next.config.ts took 44ms
+✓ Ready in 568ms
+✓ Running next.config.mjs took 25ms
 
 ○ Compiling / ...
- GET / 200 in 4.5s (next.js: 4.0s, application-code: 462ms)
+ GET / 200 in 7.0s (next.js: 6.2s, application-code: 773ms)
+⨯ ./src/app/page.tsx:7:1
+Error: Module not found: Can't resolve '@/components/TrainingQuizModule'
+  [90m 5 |[0m [36mimport[0m { [33mBrokerOnboardingForm[0m } [36mfrom[0m [32m'@/components/BrokerOnboardingForm'[0m;
+  [90m 6 |[0m [36mimport[0m { [33mQuoteGenerator[0m } [36mfrom[0m [32m'@/components/QuoteGenerator'[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mTrainingQuizModule[0m } [36mfrom[0m [32m'@/components/TrainingQuizModule'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mHospitalSearchModule[0m } [36mfrom[0m [32m'@/components/HospitalSearchModule'[0m;
+  [90m 9 |[0m [36mimport[0m { [33mPipelineTracker[0m } [36mfrom[0m [32m'@/components/PipelineTracker'[0m;
+  [90m10 |[0m [36mimport[0m { [33mCommissionLedger[0m } [36mfrom[0m [32m'@/components/CommissionLedger'[0m;
+
+Import map: aliased to relative './src/components/TrainingQuizModule' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/page.tsx:7:1
+Error: Module not found: Can't resolve '@/components/TrainingQuizModule'
+  [90m 5 |[0m [36mimport[0m { [33mBrokerOnboardingForm[0m } [36mfrom[0m [32m'@/components/BrokerOnboardingForm'[0m;
+  [90m 6 |[0m [36mimport[0m { [33mQuoteGenerator[0m } [36mfrom[0m [32m'@/components/QuoteGenerator'[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mTrainingQuizModule[0m } [36mfrom[0m [32m'@/components/TrainingQuizModule'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mHospitalSearchModule[0m } [36mfrom[0m [32m'@/components/HospitalSearchModule'[0m;
+  [90m 9 |[0m [36mimport[0m { [33mPipelineTracker[0m } [36mfrom[0m [32m'@/components/PipelineTracker'[0m;
+  [90m10 |[0m [36mimport[0m { [33mCommissionLedger[0m } [36mfrom[0m [32m'@/components/CommissionLedger'[0m;
+
+Import map: aliased to relative './src/components/TrainingQuizModule' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/page.tsx:7:1
+Error: Module not found: Can't resolve '@/components/TrainingQuizModule'
+  [90m 5 |[0m [36mimport[0m { [33mBrokerOnboardingForm[0m } [36mfrom[0m [32m'@/components/BrokerOnboardingForm'[0m;
+  [90m 6 |[0m [36mimport[0m { [33mQuoteGenerator[0m } [36mfrom[0m [32m'@/components/QuoteGenerator'[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mTrainingQuizModule[0m } [36mfrom[0m [32m'@/components/TrainingQuizModule'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mHospitalSearchModule[0m } [36mfrom[0m [32m'@/components/HospitalSearchModule'[0m;
+  [90m 9 |[0m [36mimport[0m { [33mPipelineTracker[0m } [36mfrom[0m [32m'@/components/PipelineTracker'[0m;
+  [90m10 |[0m [36mimport[0m { [33mCommissionLedger[0m } [36mfrom[0m [32m'@/components/CommissionLedger'[0m;
+
+Import map: aliased to relative './src/components/TrainingQuizModule' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./src/app/page.tsx:7:1
+Error: Module not found: Can't resolve '@/components/TrainingQuizModule'
+  [90m 5 |[0m [36mimport[0m { [33mBrokerOnboardingForm[0m } [36mfrom[0m [32m'@/components/BrokerOnboardingForm'[0m;
+  [90m 6 |[0m [36mimport[0m { [33mQuoteGenerator[0m } [36mfrom[0m [32m'@/components/QuoteGenerator'[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { [33mTrainingQuizModule[0m } [36mfrom[0m [32m'@/components/TrainingQuizModule'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m { [33mHospitalSearchModule[0m } [36mfrom[0m [32m'@/components/HospitalSearchModule'[0m;
+  [90m 9 |[0m [36mimport[0m { [33mPipelineTracker[0m } [36mfrom[0m [32m'@/components/PipelineTracker'[0m;
+  [90m10 |[0m [36mimport[0m { [33mCommissionLedger[0m } [36mfrom[0m [32m'@/components/CommissionLedger'[0m;
+
+Import map: aliased to relative './src/components/TrainingQuizModule' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ HEAD / 200 in 528ms (next.js: 90ms, application-code: 438ms)
+ GET / 200 in 71ms (next.js: 7ms, application-code: 64ms)
