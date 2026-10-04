@@ -3,13 +3,9 @@ import {
   Calculator,
   Plus,
   Trash2,
-  FileSpreadsheet,
   Download,
   Building,
-  Users,
-  Percent,
   CheckCircle,
-  Briefcase,
   Layers,
 } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -37,7 +33,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
   const [contactPerson, setContactPerson] = useState('David Adeleke');
   const [contactEmail, setContactEmail] = useState('d.adeleke@aramco.ng');
   const [contactPhone, setContactPhone] = useState('+234 803 777 9900');
-  const [notes, setNotes] = useState('');
+  const [notes] = useState('');
 
   const [categories, setCategories] = useState<CategoryInput[]>([
     { categoryName: 'Executive Team', planId: plans[2]?.id || 'plan-gold', staffCount: 15 },
@@ -133,7 +129,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
     // Mitera Branding Header
-    doc.setFillColor(15, 23, 42); // Slate 900
+    doc.setFillColor(3, 122, 134); // #037A86
     doc.rect(0, 0, 210, 35, 'F');
 
     doc.setFont('Helvetica', 'bold');
@@ -143,7 +139,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
 
     doc.setFontSize(9);
     doc.setFont('Helvetica', 'normal');
-    doc.setTextColor(6, 182, 212); // Cyan 500
+    doc.setTextColor(224, 242, 244);
     doc.text('CORPORATE HEALTHCARE PROPOSAL & QUOTATION', 14, 27);
 
     doc.setTextColor(255, 255, 255);
@@ -151,7 +147,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
     doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 196, 27, { align: 'right' });
 
     // Client & Broker Details
-    doc.setTextColor(15, 23, 42);
+    doc.setTextColor(34, 40, 43);
     doc.setFontSize(11);
     doc.setFont('Helvetica', 'bold');
     doc.text('Prepared For Client:', 14, 48);
@@ -181,7 +177,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
       startY: 70,
       head: [['Category', 'HMO Plan Name', 'Lives', 'Standard Rate', 'Discounted Rate', 'Annual Subtotal']],
       body: tableData,
-      headStyles: { fillColor: [14, 116, 144], textColor: 255, fontStyle: 'bold' },
+      headStyles: { fillColor: [2, 153, 167], textColor: 255, fontStyle: 'bold' },
       styles: { fontSize: 9, cellPadding: 4 },
       foot: [
         [
@@ -193,7 +189,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
           `N${calculation.totalPremium.toLocaleString()}`,
         ],
       ],
-      footStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' },
+      footStyles: { fillColor: [242, 242, 240], textColor: [34, 40, 43], fontStyle: 'bold' },
     });
 
     const finalY = (doc as any).lastAutoTable.finalY + 15;
@@ -205,7 +201,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
 
     doc.setFont('Helvetica', 'normal');
     doc.setFontSize(8);
-    doc.setTextColor(71, 85, 105);
+    doc.setTextColor(85, 85, 85);
     doc.text('1. Quote pricing is valid for 30 calendar days from date of issue.', 14, finalY + 6);
     doc.text('2. Hospital network access is governed by the selected plan tier.', 14, finalY + 11);
     doc.text('3. Payment terms are subject to Mitera Health corporate billing agreement.', 14, finalY + 16);
@@ -214,79 +210,79 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      {/* Banner */}
-      <div className="bg-slate-900 text-white p-6 sm:p-8">
+    <div className="bg-white rounded-2xl shadow-sm border border-[#E5E5E3] overflow-hidden">
+      {/* Light Clean Hero Header Card */}
+      <div className="bg-[#FFFFFF] p-6 sm:p-8 border-b border-[#E5E5E3]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-teal-500/20 text-teal-300 text-xs font-semibold px-3 py-1 rounded-full border border-teal-500/30 mb-3">
-              <Calculator className="w-4 h-4" />
+            <div className="inline-flex items-center space-x-2 bg-[#E0F2F4] text-[#0299A7] text-xs font-bold px-3 py-1 rounded-full mb-3">
+              <Calculator className="w-4 h-4 text-[#0299A7]" />
               <span>Node.js Dynamic Pricing Engine</span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight">Dynamic Corporate Quote Generator</h2>
-            <p className="text-slate-300 text-sm mt-1">
+            <h2 className="text-2xl font-extrabold tracking-tight text-[#22282B]">Dynamic Corporate Quote Generator</h2>
+            <p className="text-slate-600 text-sm mt-1">
               Calculate volume-banded premiums, mix-and-match staff tiers, and export co-branded PDF proposals.
             </p>
           </div>
 
-          <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 text-right min-w-[200px]">
-            <p className="text-xs text-slate-400 font-medium">Applied Volume Discount</p>
-            <p className="text-2xl font-extrabold text-teal-400 mt-0.5">
+          <div className="bg-[#E0F2F4] p-4 rounded-xl border border-teal-200 text-right min-w-[200px]">
+            <p className="text-xs text-[#037A86] font-bold">Applied Volume Discount</p>
+            <p className="text-2xl font-extrabold text-[#0299A7] mt-0.5">
               {calculation.totalDiscountPct}% Off
             </p>
-            <p className="text-[10px] text-slate-400">Total Enrollees: {calculation.totalLives} Lives</p>
+            <p className="text-[11px] text-slate-700 font-semibold">Total Enrollees: {calculation.totalLives} Lives</p>
           </div>
         </div>
       </div>
 
-      <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 bg-[#FFFFFF]">
         {/* Left Column: Form & Mix-and-Match Categories */}
         <div className="lg:col-span-7 space-y-6">
           {/* Client Info */}
-          <div className="bg-slate-50 p-5 rounded-xl border border-slate-200">
-            <h3 className="text-xs font-extrabold uppercase text-slate-500 tracking-wider mb-4 flex items-center space-x-1.5">
-              <Building className="w-4 h-4 text-teal-600" />
+          <div className="bg-[#F2F2F0] p-5 rounded-2xl border border-[#E5E5E3]">
+            <h3 className="text-xs font-extrabold uppercase text-[#037A86] tracking-wider mb-4 flex items-center space-x-1.5">
+              <Building className="w-4 h-4 text-[#0299A7]" />
               <span>Prospect Corporate Details</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Company Name</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Company Name</label>
                 <input
                   type="text"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E5E3] text-[#22282B] rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Contact Person</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Contact Person</label>
                 <input
                   type="text"
                   value={contactPerson}
                   onChange={(e) => setContactPerson(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E5E3] text-[#22282B] rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Corporate Email</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Corporate Email</label>
                 <input
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E5E3] text-[#22282B] rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
                 <input
                   type="text"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-white border border-[#E5E5E3] text-[#22282B] rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
                 />
               </div>
             </div>
@@ -295,14 +291,14 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
           {/* Plan Breakdown Categories */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-2">
-                <Layers className="w-4 h-4 text-teal-600" />
+              <h3 className="text-sm font-bold text-[#037A86] flex items-center space-x-2">
+                <Layers className="w-4 h-4 text-[#0299A7]" />
                 <span>Workforce Plan Categories & Tiers</span>
               </h3>
               <button
                 type="button"
                 onClick={addCategory}
-                className="px-3 py-1.5 bg-teal-50 text-teal-700 hover:bg-teal-100 text-xs font-bold rounded-lg transition-all flex items-center space-x-1"
+                className="px-3 py-1.5 bg-[#E0F2F4] text-[#037A86] hover:bg-teal-100 text-xs font-bold rounded-lg transition-all flex items-center space-x-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Category Group</span>
@@ -311,14 +307,14 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
 
             <div className="space-y-3">
               {categories.map((cat, idx) => (
-                <div key={idx} className="p-4 border border-slate-200 rounded-xl bg-white shadow-sm flex flex-col sm:flex-row items-center gap-3">
+                <div key={idx} className="p-4 border border-[#E5E5E3] rounded-xl bg-white shadow-xs flex flex-col sm:flex-row items-center gap-3">
                   <div className="w-full sm:w-1/3">
                     <label className="block text-[10px] font-bold text-slate-500 uppercase">Group Label</label>
                     <input
                       type="text"
                       value={cat.categoryName}
                       onChange={(e) => updateCategory(idx, 'categoryName', e.target.value)}
-                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-teal-500"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-[#0299A7]"
                     />
                   </div>
 
@@ -327,7 +323,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
                     <select
                       value={cat.planId}
                       onChange={(e) => updateCategory(idx, 'planId', e.target.value)}
-                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-teal-500"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-[#0299A7]"
                     >
                       {plans.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -344,7 +340,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
                       min={1}
                       value={cat.staffCount}
                       onChange={(e) => updateCategory(idx, 'staffCount', parseInt(e.target.value) || 0)}
-                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-bold focus:ring-2 focus:ring-teal-500"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-bold focus:ring-2 focus:ring-[#0299A7]"
                     />
                   </div>
 
@@ -352,7 +348,7 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
                     <button
                       type="button"
                       onClick={() => removeCategory(idx)}
-                      className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg mt-3 sm:mt-4"
+                      className="p-2 text-[#D66F66] hover:text-white hover:bg-[#D66F66] bg-[#FCE8E6] rounded-lg mt-3 sm:mt-4 transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -363,46 +359,46 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
           </div>
         </div>
 
-        {/* Right Column: Live Premium Calculation Ledger */}
-        <div className="lg:col-span-5 bg-slate-900 text-white p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
+        {/* Right Column: Live Premium Calculation Ledger in Light #E0F2F4 */}
+        <div className="lg:col-span-5 bg-[#E0F2F4] text-[#22282B] p-6 rounded-2xl flex flex-col justify-between border border-teal-200">
           <div>
-            <h3 className="text-lg font-bold text-white border-b border-slate-800 pb-3 flex items-center justify-between">
+            <h3 className="text-lg font-extrabold text-[#037A86] border-b border-teal-200 pb-3 flex items-center justify-between">
               <span>Quote Summary Ledger</span>
-              <span className="text-xs bg-teal-900 text-teal-300 font-semibold px-2.5 py-1 rounded-full">
+              <span className="text-xs bg-white text-[#037A86] border border-teal-200 font-bold px-2.5 py-1 rounded-full">
                 Live Calculated
               </span>
             </h3>
 
             <div className="mt-5 space-y-4">
               {calculation.breakout.map((b, i) => (
-                <div key={i} className="flex items-center justify-between text-xs pb-3 border-b border-slate-800/60">
+                <div key={i} className="flex items-center justify-between text-xs pb-3 border-b border-teal-200/70">
                   <div>
-                    <p className="font-bold text-white">{b.categoryName}</p>
-                    <p className="text-slate-400 text-[11px]">{b.name} ({b.staffCount} lives)</p>
+                    <p className="font-bold text-[#22282B]">{b.categoryName}</p>
+                    <p className="text-slate-600 text-[11px]">{b.name} ({b.staffCount} lives)</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono text-teal-300 font-bold">₦{b.subtotal.toLocaleString()}</p>
-                    <p className="text-[10px] text-slate-400">₦{b.finalPricePerHead.toLocaleString()} / head</p>
+                    <p className="font-mono text-[#037A86] font-bold">₦{b.subtotal.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-600">₦{b.finalPricePerHead.toLocaleString()} / head</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="mt-8 pt-5 border-t border-slate-800 space-y-4">
-            <div className="flex items-center justify-between text-xs text-slate-300">
-              <span>Total Workforce Count:</span>
-              <span className="font-bold text-white">{calculation.totalLives} Enrollees</span>
+          <div className="mt-8 pt-5 border-t border-teal-200 space-y-4">
+            <div className="flex items-center justify-between text-xs text-slate-700">
+              <span className="font-medium">Total Workforce Count:</span>
+              <span className="font-bold text-[#22282B]">{calculation.totalLives} Enrollees</span>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-300">
-              <span>Applied Volume Discount:</span>
-              <span className="font-bold text-emerald-400">{calculation.totalDiscountPct}% Off</span>
+            <div className="flex items-center justify-between text-xs text-slate-700">
+              <span className="font-medium">Applied Volume Discount:</span>
+              <span className="font-extrabold text-[#0299A7]">{calculation.totalDiscountPct}% Off</span>
             </div>
 
-            <div className="flex items-center justify-between text-base pt-3 border-t border-slate-800">
-              <span className="font-bold text-white">Total Annual Premium:</span>
-              <span className="font-extrabold text-2xl text-teal-400 font-mono">
+            <div className="flex items-center justify-between text-base pt-3 border-t border-teal-200">
+              <span className="font-extrabold text-[#037A86]">Total Annual Premium:</span>
+              <span className="font-extrabold text-2xl text-[#0299A7] font-mono">
                 ₦{calculation.totalPremium.toLocaleString()}
               </span>
             </div>
@@ -411,16 +407,16 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
               <button
                 type="button"
                 onClick={generateProposalPdf}
-                className="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold rounded-xl shadow flex items-center justify-center space-x-1.5"
+                className="w-full py-3 bg-white hover:bg-slate-50 border border-[#E5E5E3] text-[#22282B] text-xs font-bold rounded-xl shadow-xs flex items-center justify-center space-x-1.5 transition-all"
               >
-                <Download className="w-4 h-4 text-teal-400" />
+                <Download className="w-4 h-4 text-[#037A86]" />
                 <span>Export PDF Quote</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleSaveDeal}
-                className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-teal-600/30 flex items-center justify-center space-x-1.5"
+                className="w-full py-3 bg-[#0299A7] hover:bg-[#037A86] text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center space-x-1.5 transition-all"
               >
                 <CheckCircle className="w-4 h-4" />
                 <span>Log Deal to CRM</span>

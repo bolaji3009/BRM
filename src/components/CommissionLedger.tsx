@@ -87,24 +87,24 @@ export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions,
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-[#E5E5E3] overflow-hidden">
       {/* Banner */}
-      <div className="bg-[#037A86] text-white p-6 sm:p-8">
+      <div className="bg-[#FFFFFF] p-6 sm:p-8 border-b border-[#E5E5E3]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-white/15 text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/20 mb-3">
-              <Wallet className="w-4 h-4 text-teal-200" />
+            <div className="inline-flex items-center space-x-2 bg-[#E0F2F4] text-[#0299A7] text-xs font-bold px-3 py-1 rounded-full mb-3">
+              <Wallet className="w-4 h-4 text-[#0299A7]" />
               <span>Transparent Commission Ledger & Wallet</span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight">Commission Payouts & FIRS Tax Statements</h2>
-            <p className="text-teal-100/90 text-sm mt-1">
+            <h2 className="text-2xl font-extrabold tracking-tight text-[#22282B]">Commission Payouts & FIRS Tax Statements</h2>
+            <p className="text-slate-600 text-sm mt-1">
               Automated 5% Corporate / 10% Individual Withholding Tax (WHT) calculations with NUBAN bank reconciliation.
             </p>
           </div>
 
           <button
             onClick={exportStatementPdf}
-            className="px-5 py-2.5 bg-[#0299A7] hover:bg-[#025F69] text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-2 shrink-0 transition-all border border-teal-300/30"
+            className="px-5 py-2.5 bg-[#0299A7] hover:bg-[#037A86] text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-2 shrink-0 transition-all"
           >
             <Download className="w-4 h-4" />
             <span>Download Statement PDF</span>
@@ -113,16 +113,16 @@ export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions,
       </div>
 
       {/* Summary Stat Cards */}
-      <div className="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-3 gap-6 bg-[#F2F2F0] border-b border-slate-200">
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs">
+      <div className="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-3 gap-6 bg-[#F2F2F0] border-b border-[#E5E5E3]">
+        <div className="p-5 bg-white border border-[#E5E5E3] rounded-2xl shadow-xs">
           <p className="text-xs font-bold text-slate-500 uppercase">Gross Commissions Earned</p>
-          <p className="text-2xl font-extrabold text-slate-900 font-mono mt-1">
+          <p className="text-2xl font-extrabold text-[#22282B] font-mono mt-1">
             ₦{totals.grossCommissions.toLocaleString()}
           </p>
           <p className="text-[11px] text-slate-500 mt-1">Based on 10% standard corporate split</p>
         </div>
 
-        <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-xs">
+        <div className="p-5 bg-white border border-[#E5E5E3] rounded-2xl shadow-xs">
           <p className="text-xs font-bold text-slate-500 uppercase">FIRS Withholding Tax (WHT)</p>
           <p className="text-2xl font-extrabold text-[#D66F66] font-mono mt-1">
             -₦{totals.totalWht.toLocaleString()}
@@ -130,12 +130,12 @@ export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions,
           <p className="text-[11px] text-slate-500 mt-1">5% Corporate WHT deducted at source</p>
         </div>
 
-        <div className="p-5 bg-[#037A86] text-white rounded-2xl shadow-md border border-teal-700">
-          <p className="text-xs font-bold text-teal-100 uppercase">Net Disbursed / Wallet Balance</p>
-          <p className="text-2xl font-extrabold text-white font-mono mt-1">
+        <div className="p-5 bg-[#E0F2F4] text-[#22282B] rounded-2xl border border-teal-200 shadow-xs">
+          <p className="text-xs font-extrabold text-[#037A86] uppercase">Net Disbursed / Wallet Balance</p>
+          <p className="text-2xl font-black text-[#0299A7] font-mono mt-1">
             ₦{totals.netPayouts.toLocaleString()}
           </p>
-          <p className="text-[11px] text-teal-100/90 mt-1">Direct NUBAN bank transfer ready</p>
+          <p className="text-[11px] text-slate-700 mt-1 font-semibold">Direct NUBAN bank transfer ready</p>
         </div>
       </div>
 
@@ -156,7 +156,7 @@ export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions,
           </thead>
           <tbody className="divide-y divide-slate-100">
             {commissions.map((c) => (
-              <tr key={c.id} className="hover:bg-slate-50/80">
+              <tr key={c.id} className="hover:bg-slate-50">
                 <td className="py-3.5 font-bold text-slate-900">{c.companyName || 'Zenith Logistics'}</td>
                 <td className="py-3.5 font-mono text-slate-700">₦{c.grossPremium.toLocaleString()}</td>
                 <td className="py-3.5 font-bold text-[#037A86]">{c.commissionRate}%</td>
@@ -168,7 +168,7 @@ export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions,
                     className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                       c.status === 'PAID'
                         ? 'bg-[#E0F2F4] text-[#037A86]'
-                        : 'bg-amber-100 text-amber-900'
+                        : 'bg-[#FCE8E6] text-[#D66F66]'
                     }`}
                   >
                     <CheckCircle2 className="w-3 h-3" />

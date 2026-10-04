@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import {
   Building2,
   FileCheck2,
-  ShieldAlert,
   CheckCircle2,
-  AlertCircle,
   Upload,
-  RefreshCw,
-  ExternalLink,
   ShieldCheck,
   UserCheck,
+  ExternalLink,
 } from 'lucide-react';
 import { BrokerData } from '@/lib/mockDb';
 
@@ -42,14 +39,6 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
     ndpaConsent: broker.ndpaConsent || false,
   });
 
-  const [verifying, setVerifying] = useState<{ [key: string]: boolean }>({});
-  const [verified, setVerified] = useState<{ [key: string]: boolean }>({
-    cac: !!broker.rcNumber,
-    naicom: !!broker.naicomLicenseNumber,
-    nin: !!broker.nin,
-    nuban: !!broker.accountNumber,
-  });
-
   const [uploadedDocs, setUploadedDocs] = useState<{ [key: string]: string }>({
     cacCert: broker.rcNumber ? 'CAC_Registration_Certificate_Apex.pdf' : '',
     naicomLicense: broker.naicomLicenseNumber ? 'NAICOM_Broker_License_2024.pdf' : '',
@@ -65,17 +54,6 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
-  };
-
-  const handleVerify = (type: string) => {
-    setVerifying((prev) => ({ ...prev, [type]: true }));
-    setTimeout(() => {
-      setVerifying((prev) => ({ ...prev, [type]: false }));
-      setVerified((prev) => ({ ...prev, [type]: true }));
-      if (type === 'nuban' && !formData.accountName) {
-        setFormData((prev) => ({ ...prev, accountName: formData.companyName || 'APEX INSURANCE BROKERS LTD' }));
-      }
-    }, 1200);
   };
 
   const handleFileUpload = (docKey: string, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,63 +72,63 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
     });
   };
 
+  const isIndividual = formData.brokerType === 'INDIVIDUAL';
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      {/* Header Banner */}
-      <div className="bg-slate-900 text-white p-6 sm:p-8">
+      {/* Light Clean Hero Header Card per Mitera 70/20/10 Guidelines */}
+      <div className="bg-[#FFFFFF] p-6 sm:p-8 border-b border-[#E5E5E3]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-teal-500/20 text-teal-300 text-xs font-semibold px-3 py-1 rounded-full border border-teal-500/30 mb-3">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="inline-flex items-center space-x-2 bg-[#E0F2F4] text-[#0299A7] text-xs font-bold px-3 py-1 rounded-full mb-3">
+              <ShieldCheck className="w-4 h-4 text-[#0299A7]" />
               <span>NHIA & NAICOM Regulatory Compliance Portal</span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-white">
+            <h2 className="text-2xl font-extrabold tracking-tight text-[#22282B]">
               Broker Onboarding & Verification (KYC)
             </h2>
-            <p className="text-slate-300 text-sm mt-1">
+            <p className="text-slate-600 text-sm mt-1">
               Complete mandatory corporate registration, licensing validation, and payout account verification.
             </p>
           </div>
 
-          <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 min-w-[220px]">
-            <p className="text-xs text-slate-400 font-medium">Approval Status</p>
+          <div className="bg-[#FCE8E6] p-4 rounded-xl border border-pink-200 min-w-[220px]">
+            <p className="text-xs text-[#D66F66] font-bold uppercase tracking-wider">Approval Status</p>
             <div className="flex items-center space-x-2 mt-1">
               <span
-                className={`inline-block w-3 h-3 rounded-full ${
+                className={`inline-block w-2.5 h-2.5 rounded-full ${
                   broker.status === 'ACTIVE'
-                    ? 'bg-emerald-500'
-                    : broker.status === 'PENDING_VERIFICATION'
-                    ? 'bg-amber-500'
-                    : 'bg-slate-400'
+                    ? 'bg-[#0299A7]'
+                    : 'bg-[#EF8E85]'
                 }`}
               />
-              <span className="font-semibold text-sm capitalize">
+              <span className="font-extrabold text-sm text-[#D66F66] capitalize">
                 {broker.status.replace('_', ' ')}
               </span>
             </div>
             {broker.brokerCode && (
-              <p className="text-xs text-teal-400 mt-2 font-mono">Code: {broker.brokerCode}</p>
+              <p className="text-xs text-[#037A86] mt-2 font-mono font-bold">Code: {broker.brokerCode}</p>
             )}
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-8">
+      <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-8 bg-[#FFFFFF]">
         {/* Step 1: Broker Profile & Entity Details */}
         <div>
-          <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-2 border-b border-slate-200">
-            <Building2 className="w-5 h-5 text-teal-600" />
-            <span>1. {formData.brokerType === 'INDIVIDUAL' ? 'Individual Agent Profile & Licensing' : 'Corporate Profile & Entity Details'}</span>
+          <h3 className="text-lg font-bold text-[#037A86] flex items-center space-x-2 pb-2 border-b border-slate-200">
+            <Building2 className="w-5 h-5 text-[#0299A7]" />
+            <span>1. {isIndividual ? 'Individual Agent Profile' : 'Corporate Profile & Entity Details'}</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Broker Partnership Type</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Broker Partnership Type</label>
               <select
                 name="brokerType"
                 value={formData.brokerType}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
               >
                 <option value="CORPORATE">Corporate Brokerage Firm</option>
                 <option value="INDIVIDUAL">Individual Licensed Agent</option>
@@ -160,8 +138,8 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                {formData.brokerType === 'INDIVIDUAL' ? 'Agent Full Name' : 'Company Registered Name'}
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                {isIndividual ? 'Agent Full Name' : 'Company Registered Name'}
               </label>
               <input
                 type="text"
@@ -169,38 +147,29 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                 value={formData.companyName}
                 onChange={handleInputChange}
                 required
-                placeholder={formData.brokerType === 'INDIVIDUAL' ? 'e.g. Babajide Chukwuma' : 'e.g. Apex Insurance Brokers Ltd'}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                placeholder={isIndividual ? 'e.g. Babajide Chukwuma' : 'e.g. Apex Insurance Brokers Ltd'}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
               />
             </div>
 
-            {formData.brokerType !== 'INDIVIDUAL' && (
+            {!isIndividual && (
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">CAC Registration (RC Number)</label>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    name="rcNumber"
-                    value={formData.rcNumber}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="RC-1294821"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleVerify('cac')}
-                    className="px-3 py-2 bg-slate-800 text-white text-xs font-semibold rounded-lg hover:bg-slate-700 flex items-center shrink-0"
-                  >
-                    {verifying.cac ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : verified.cac ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : 'Verify CAC'}
-                  </button>
-                </div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">CAC Registration (RC Number)</label>
+                <input
+                  type="text"
+                  name="rcNumber"
+                  value={formData.rcNumber}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="RC-1294821"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
+                />
               </div>
             )}
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">NAICOM License Number</label>
-              <div className="flex space-x-2">
+            {!isIndividual && (
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">NAICOM License Number</label>
                 <input
                   type="text"
                   name="naicomLicenseNumber"
@@ -208,59 +177,56 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                   onChange={handleInputChange}
                   required
                   placeholder="NAICOM/BRK/2024/089"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
                 />
-                <button
-                  type="button"
-                  onClick={() => handleVerify('naicom')}
-                  className="px-3 py-2 bg-slate-800 text-white text-xs font-semibold rounded-lg hover:bg-slate-700 flex items-center shrink-0"
-                >
-                  {verifying.naicom ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : verified.naicom ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : 'Check NAICOM'}
-                </button>
               </div>
-            </div>
+            )}
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">NAICOM Expiry Date</label>
-              <input
-                type="date"
-                name="naicomExpiryDate"
-                value={formData.naicomExpiryDate ? formData.naicomExpiryDate.split('T')[0] : ''}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
-              />
-            </div>
+            {!isIndividual && (
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">NAICOM Expiry Date</label>
+                <input
+                  type="date"
+                  name="naicomExpiryDate"
+                  value={formData.naicomExpiryDate ? formData.naicomExpiryDate.split('T')[0] : ''}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
+                />
+              </div>
+            )}
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">NHIA Accreditation Number</label>
-              <input
-                type="text"
-                name="nhiaAccreditationNo"
-                value={formData.nhiaAccreditationNo}
-                onChange={handleInputChange}
-                placeholder="NHIA/ACT/9902"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
-              />
-            </div>
+            {!isIndividual && (
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">NHIA Accreditation Number</label>
+                <input
+                  type="text"
+                  name="nhiaAccreditationNo"
+                  value={formData.nhiaAccreditationNo}
+                  onChange={handleInputChange}
+                  placeholder="NHIA/ACT/9902"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
+                />
+              </div>
+            )}
           </div>
         </div>
 
         {/* Step 2: Tax & NUBAN Payout Details */}
         <div>
-          <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-2 border-b border-slate-200">
-            <UserCheck className="w-5 h-5 text-teal-600" />
+          <h3 className="text-lg font-bold text-[#037A86] flex items-center space-x-2 pb-2 border-b border-slate-200">
+            <UserCheck className="w-5 h-5 text-[#0299A7]" />
             <span>2. Tax Verification & NUBAN Commission Payout Account</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Bank Name</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Bank Name</label>
               <select
                 name="bankName"
                 value={formData.bankName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
               >
                 <option value="Guaranty Trust Bank (GTBank)">Guaranty Trust Bank (GTBank)</option>
                 <option value="Zenith Bank">Zenith Bank</option>
@@ -272,53 +238,52 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">NUBAN Account Number</label>
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  name="accountNumber"
-                  value={formData.accountNumber}
-                  onChange={handleInputChange}
-                  maxLength={10}
-                  placeholder="0123456789"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none font-mono"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleVerify('nuban')}
-                  className="px-3 py-2 bg-teal-700 text-white text-xs font-semibold rounded-lg hover:bg-teal-800 flex items-center shrink-0"
-                >
-                  {verifying.nuban ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : verified.nuban ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" /> : 'Validate NUBAN'}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Validated Account Name</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">NUBAN Account Number</label>
               <input
                 type="text"
-                name="accountName"
-                value={formData.accountName}
-                readOnly
-                placeholder="Auto-validated via NUBAN"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-sm font-semibold cursor-not-allowed"
+                name="accountNumber"
+                value={formData.accountNumber}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  if (e.target.value.length === 10 && !formData.accountName) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      accountName: prev.companyName || 'VALIDATED ACCOUNT HOLDER',
+                    }));
+                  }
+                }}
+                maxLength={10}
+                placeholder="0123456789"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Tax Identification Number (TIN)</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Account Holder Name</label>
+              <input
+                type="text"
+                name="accountName"
+                value={formData.accountName}
+                onChange={handleInputChange}
+                placeholder="Name registered on bank account"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Tax Identification Number (TIN)</label>
               <input
                 type="text"
                 name="taxIdNumber"
                 value={formData.taxIdNumber}
                 onChange={handleInputChange}
                 placeholder="TIN-98214019-0001"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none font-mono"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">National Identity Number (NIN)</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">National Identity Number (NIN)</label>
               <input
                 type="text"
                 name="nin"
@@ -326,17 +291,17 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                 onChange={handleInputChange}
                 maxLength={11}
                 placeholder="10293847561"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none font-mono"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none font-mono"
               />
             </div>
           </div>
         </div>
 
         {/* Step 3: Required Regulatory Uploads - Only shown for Corporate/Aggregator/Bancassurance */}
-        {formData.brokerType !== 'INDIVIDUAL' && (
+        {!isIndividual && (
           <div>
-            <h3 className="text-lg font-bold text-slate-900 flex items-center space-x-2 pb-2 border-b border-slate-200">
-              <FileCheck2 className="w-5 h-5 text-teal-600" />
+            <h3 className="text-lg font-bold text-[#037A86] flex items-center space-x-2 pb-2 border-b border-slate-200">
+              <FileCheck2 className="w-5 h-5 text-[#0299A7]" />
               <span>3. Audit Documents Upload & Watermarking</span>
             </h3>
 
@@ -347,12 +312,12 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                 { key: 'taxClearance', label: 'FIRS Tax Clearance Certificate (TCC)' },
                 { key: 'indemnityCover', label: 'Professional Indemnity Insurance Cover Policy' },
               ].map((doc) => (
-                <div key={doc.key} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                <div key={doc.key} className="p-4 rounded-xl border border-slate-200 bg-[#F2F2F0] flex flex-col justify-between">
                   <div>
                     <p className="text-xs font-bold text-slate-800">{doc.label}</p>
                     {uploadedDocs[doc.key] ? (
-                      <div className="flex items-center space-x-2 mt-2 text-xs text-emerald-700 font-medium">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <div className="flex items-center space-x-2 mt-2 text-xs text-[#037A86] font-bold">
+                        <CheckCircle2 className="w-4 h-4 text-[#0299A7]" />
                         <span className="truncate max-w-[200px]">{uploadedDocs[doc.key]}</span>
                       </div>
                     ) : (
@@ -361,8 +326,8 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                   </div>
 
                   <div className="mt-3 flex items-center justify-between">
-                    <label className="cursor-pointer inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 shadow-sm">
-                      <Upload className="w-3.5 h-3.5 text-teal-600" />
+                    <label className="cursor-pointer inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 shadow-sm transition-all">
+                      <Upload className="w-3.5 h-3.5 text-[#0299A7]" />
                       <span>Upload Document</span>
                       <input
                         type="file"
@@ -371,7 +336,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                         onChange={(e) => handleFileUpload(doc.key, e)}
                       />
                     </label>
-                    <span className="text-[10px] bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded">
+                    <span className="text-[10px] bg-white border border-teal-200 text-[#037A86] font-bold px-2 py-0.5 rounded">
                       Mitera Watermarked
                     </span>
                   </div>
@@ -382,7 +347,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
         )}
 
         {/* NDPA 2023 Consent & Submission */}
-        <div className="bg-teal-50 border border-teal-200 rounded-xl p-5">
+        <div className="bg-[#E0F2F4] border border-teal-200 rounded-xl p-5">
           <div className="flex items-start space-x-3">
             <input
               type="checkbox"
@@ -391,10 +356,10 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
               checked={formData.ndpaConsent}
               onChange={handleInputChange}
               required
-              className="mt-1 w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
+              className="mt-1 w-4 h-4 text-[#0299A7] border-slate-300 rounded focus:ring-[#0299A7]"
             />
-            <label htmlFor="ndpaConsent" className="text-xs text-slate-700 leading-relaxed">
-              <span className="font-bold text-slate-900">NDPA 2023 Data Protection Consent:</span> I hereby consent to Mitera Health Limited processing my corporate and personally identifiable information (PII) strictly for regulatory compliance vetting with NHIA, NAICOM, FIRS, and commission payout setup under the Nigeria Data Protection Act 2023.
+            <label htmlFor="ndpaConsent" className="text-xs text-slate-800 leading-relaxed">
+              <span className="font-extrabold text-[#037A86]">NDPA 2023 Data Protection Consent:</span> I hereby consent to Mitera Health Limited processing my corporate and personally identifiable information (PII) strictly for regulatory compliance vetting with NHIA, NAICOM, FIRS, and commission payout setup under the Nigeria Data Protection Act 2023.
             </label>
           </div>
         </div>
@@ -405,7 +370,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
           </p>
           <button
             type="submit"
-            className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-teal-600/20 transition-all flex items-center space-x-2"
+            className="px-6 py-3 bg-[#0299A7] hover:bg-[#037A86] text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center space-x-2"
           >
             <span>Submit Onboarding Application</span>
             <ExternalLink className="w-4 h-4" />

@@ -85,80 +85,94 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-      {/* Banner */}
-      <div className="bg-[#037A86] text-white p-6 sm:p-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="bg-white rounded-2xl shadow-sm border border-[#E5E5E3] overflow-hidden">
+      {/* Light Clean Hero Banner per Mitera 70/20/10 Guidelines */}
+      <div className="bg-[#FFFFFF] p-6 sm:p-8 border-b border-[#E5E5E3]">
+        {/* Top Header Row with Title & Export Action */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-white/15 text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/20 mb-3">
-              <ShieldCheck className="w-4 h-4 text-teal-200" />
+            <div className="inline-flex items-center space-x-2 bg-[#E0F2F4] text-[#0299A7] text-xs font-bold px-3 py-1 rounded-full mb-2">
+              <ShieldCheck className="w-4 h-4 text-[#0299A7]" />
               <span>HMO Executive Compliance & Governance Portal</span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight">Multi-Level Broker Review & NHIA Returns</h2>
-            <p className="text-teal-100/90 text-sm mt-1">
+            <h2 className="text-2xl font-extrabold tracking-tight text-[#22282B]">Multi-Level Broker Review & NHIA Returns</h2>
+            <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
               Audit submitted CAC & NAICOM docs, assign tier overrides, and export regulatory monthly returns.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <button
-              onClick={exportNhiaReturnsCsv}
-              className="px-4 py-2 bg-[#0299A7] hover:bg-[#025F69] text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center space-x-2 shrink-0 transition-all border border-teal-300/30"
-            >
-              <Download className="w-4 h-4" />
-              <span>Export NHIA Returns CSV</span>
-            </button>
+          <button
+            onClick={exportNhiaReturnsCsv}
+            className="px-4 py-2.5 bg-[#0299A7] hover:bg-[#037A86] text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center space-x-2 shrink-0 transition-all"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export NHIA Returns CSV</span>
+          </button>
+        </div>
 
-            <div className="flex items-center space-x-1 bg-[#025F69] p-1 rounded-xl border border-teal-600/30 overflow-x-auto">
-              <button
-                onClick={() => setActiveTab('QUEUE')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all ${
-                  activeTab === 'QUEUE' ? 'bg-[#0299A7] text-white shadow-xs' : 'text-teal-100 hover:text-white'
-                }`}
-              >
-                Review Queue ({pendingBrokers.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('BROKERS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all ${
-                  activeTab === 'BROKERS' ? 'bg-[#0299A7] text-white shadow-xs' : 'text-teal-100 hover:text-white'
-                }`}
-              >
-                All Brokers ({brokers.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('QUOTE')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all ${
-                  activeTab === 'QUOTE' ? 'bg-[#0299A7] text-white shadow-xs' : 'text-teal-100 hover:text-white'
-                }`}
-              >
-                Quote Generator
-              </button>
-              <button
-                onClick={() => setActiveTab('HOSPITALS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all ${
-                  activeTab === 'HOSPITALS' ? 'bg-[#0299A7] text-white shadow-xs' : 'text-teal-100 hover:text-white'
-                }`}
-              >
-                Hospitals Directory
-              </button>
-              <button
-                onClick={() => setActiveTab('PIPELINE')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all ${
-                  activeTab === 'PIPELINE' ? 'bg-[#0299A7] text-white shadow-xs' : 'text-teal-100 hover:text-white'
-                }`}
-              >
-                CRM Pipeline
-              </button>
-              <button
-                onClick={() => setActiveTab('COMMISSIONS')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all ${
-                  activeTab === 'COMMISSIONS' ? 'bg-[#0299A7] text-white shadow-xs' : 'text-teal-100 hover:text-white'
-                }`}
-              >
-                Commissions & Wallet
-              </button>
-            </div>
+        {/* Tab Navigation Bar placed below the Export Button */}
+        <div className="pt-4 overflow-x-auto">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setActiveTab('QUEUE')}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'QUEUE'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Review Queue ({pendingBrokers.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('BROKERS')}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'BROKERS'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              All Brokers ({brokers.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('QUOTE')}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'QUOTE'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Quote Generator
+            </button>
+            <button
+              onClick={() => setActiveTab('HOSPITALS')}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'HOSPITALS'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Hospitals Directory
+            </button>
+            <button
+              onClick={() => setActiveTab('PIPELINE')}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'PIPELINE'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              CRM Pipeline
+            </button>
+            <button
+              onClick={() => setActiveTab('COMMISSIONS')}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'COMMISSIONS'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Commissions & Wallet
+            </button>
           </div>
         </div>
       </div>
@@ -168,7 +182,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Queue List */}
             <div className="lg:col-span-5 space-y-3">
-              <h3 className="font-bold text-slate-900 text-sm mb-3">Pending Onboarding Applications</h3>
+              <h3 className="font-bold text-[#22282B] text-sm mb-3">Pending Onboarding Applications</h3>
               {pendingBrokers.map((b) => (
                 <div
                   key={b.id}
@@ -181,7 +195,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-900 text-sm">{b.companyName}</span>
-                    <span className="text-[10px] bg-amber-100 text-amber-900 font-extrabold px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] bg-[#FCE8E6] text-[#D66F66] font-extrabold px-2 py-0.5 rounded-full">
                       Risk Score: {b.riskScore}
                     </span>
                   </div>
@@ -296,7 +310,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <td className="py-3.5 font-mono font-bold text-[#037A86]">{b.brokerCode || 'N/A'}</td>
                     <td className="py-3.5 font-bold text-slate-900">{b.companyName}</td>
                     <td className="py-3.5 font-semibold text-slate-700">{b.brokerType}</td>
-                    <td className="py-3.5 font-mono text-slate-700">{b.naicomLicenseNumber}</td>
+                    <td className="py-3.5 font-mono text-slate-700">{b.naicomLicenseNumber || 'N/A'}</td>
                     <td className="py-3.5 font-semibold text-slate-800">{b.tierLevel}</td>
                     <td className="py-3.5">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
