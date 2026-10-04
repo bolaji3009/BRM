@@ -112,3 +112,5 @@ https://nextjs.org/docs/messages/module-not-found
 
  HEAD / 200 in 528ms (next.js: 90ms, application-code: 438ms)
  GET / 200 in 71ms (next.js: 7ms, application-code: 64ms)
+ HEAD / 200 in 440ms (next.js: 89ms, application-code: 351ms)
+ GET / 200 in 187ms (next.js: 29ms, application-code: 159ms)
