@@ -152,7 +152,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans text-slate-900 pb-16">
+    <div className="min-h-screen bg-[#F2F2F0] font-sans text-[#22282B] pb-16">
       {/* Top Navbar */}
       <Navbar
         currentRole={currentRole}

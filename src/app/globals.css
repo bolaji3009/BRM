@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Overriding Teal theme palette with Mitera Health Teal (#0299A7) */
+  /* Mitera Health Primary Palette (#0299A7) */
   --color-teal-50: #E0F2F4;
   --color-teal-100: #C2E5E9;
   --color-teal-200: #99D4DC;
@@ -10,34 +10,25 @@
   --color-teal-500: #0299A7;
   --color-teal-600: #0299A7;
   --color-teal-700: #037A86;
-  --color-teal-800: #06626C;
-  --color-teal-900: #22282B;
+  --color-teal-800: #025F69;
+  --color-teal-900: #014148;
 
-  /* Overriding Emerald/Accent theme palette with Mitera Health Coral (#EF8E85) */
-  --color-emerald-50: #FCE8E6;
-  --color-emerald-100: #FAD0CC;
-  --color-emerald-200: #F7BCB6;
-  --color-emerald-300: #F3A49C;
-  --color-emerald-400: #EF8E85;
-  --color-emerald-500: #EF8E85;
-  --color-emerald-600: #D66F66;
-  --color-emerald-700: #BD534A;
+  /* Mitera Health Coral Palette (#EF8E85) */
+  --color-coral-50: #FCE8E6;
+  --color-coral-100: #FAD0CC;
+  --color-coral-200: #F7BCB6;
+  --color-coral-300: #F3A49C;
+  --color-coral-400: #EF8E85;
+  --color-coral-500: #EF8E85;
+  --color-coral-600: #D66F66;
+  --color-coral-700: #BD534A;
 
-  /* Custom Brand Accent Tokens */
-  --color-turquoise-base: #0299A7;
-  --color-turquoise-medium: #1DAAB7;
-  --color-turquoise-light: #76C9D1;
-  --color-turquoise-lighter: #E0F2F4;
-
-  --color-coral-base: #EF8E85;
-  --color-coral-light: #FCE8E6;
-  --color-coral-medium: #F7BCB6;
-  --color-coral-dark: #D66F66;
-
+  /* Custom Brand Accent & Surface Tokens */
   --color-brand-primary: #0299A7;
+  --color-brand-topbar: #037A86;
   --color-brand-coral: #EF8E85;
   --color-brand-bg: #F2F2F0;
-  --color-brand-dark: #22282B;
+  --color-brand-text: #22282B;
 }
 
 body {

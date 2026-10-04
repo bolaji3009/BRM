@@ -3,16 +3,12 @@
 import React from 'react';
 import {
   ShieldCheck,
-  Building2,
   UserCheck,
-  CheckCircle2,
   Wallet,
   Users,
   TrendingUp,
   FileText,
   Award,
-  CreditCard,
-  Hospital,
 } from 'lucide-react';
 import { BrokerData, QuoteDealData, CommissionData } from '@/lib/mockDb';
 
@@ -37,27 +33,27 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
   return (
     <div className="space-y-8 pb-12">
       {/* Header Banner */}
-      <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-md border border-slate-800">
+      <div className="bg-[#037A86] text-white rounded-2xl p-6 sm:p-8 shadow-md border border-teal-700">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center space-x-2 bg-teal-500/20 text-teal-300 text-xs font-semibold px-3 py-1 rounded-full border border-teal-500/30 mb-3">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="inline-flex items-center space-x-2 bg-white/15 text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/20 mb-3">
+              <ShieldCheck className="w-4 h-4 text-teal-200" />
               <span>NHIA Accredited Broker Portal (Read-Only)</span>
             </div>
             <h2 className="text-2xl font-extrabold tracking-tight text-white">{broker.companyName}</h2>
-            <p className="text-slate-300 text-xs sm:text-sm mt-1">
-              Type: <span className="font-semibold text-teal-300">{broker.brokerType}</span> • Partnership Tier:{' '}
-              <span className="font-semibold text-teal-300">{broker.tierLevel.replace('_', ' ')}</span>
+            <p className="text-teal-100 text-xs sm:text-sm mt-1">
+              Type: <span className="font-bold text-white">{broker.brokerType}</span> • Partnership Tier:{' '}
+              <span className="font-bold text-white">{broker.tierLevel.replace('_', ' ')}</span>
             </p>
           </div>
 
-          <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 min-w-[220px]">
-            <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Account Status</p>
+          <div className="bg-[#025F69] p-4 rounded-xl border border-teal-600/40 min-w-[220px]">
+            <p className="text-[11px] text-teal-100 font-bold uppercase tracking-wider">Account Status</p>
             <div className="flex items-center space-x-2 mt-1">
-              <span className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="font-bold text-sm text-emerald-400 capitalize">{broker.status}</span>
+              <span className="w-3 h-3 rounded-full bg-emerald-400" />
+              <span className="font-bold text-sm text-white capitalize">{broker.status}</span>
             </div>
-            <p className="text-xs text-teal-400 mt-2 font-mono font-bold">
+            <p className="text-xs text-teal-100 mt-2 font-mono font-bold">
               Broker Code: {broker.brokerCode || 'HMO-BRK-1001'}
             </p>
           </div>
@@ -69,16 +65,16 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Lives Covered</p>
-            <Users className="w-5 h-5 text-teal-600" />
+            <Users className="w-5 h-5 text-[#0299A7]" />
           </div>
           <p className="text-2xl font-black text-slate-900 mt-2">{totalLives.toLocaleString()} Lives</p>
-          <p className="text-[11px] text-emerald-600 font-semibold mt-1">Active across corporate plans</p>
+          <p className="text-[11px] text-[#037A86] font-semibold mt-1">Active across corporate plans</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Gross Premium</p>
-            <TrendingUp className="w-5 h-5 text-teal-600" />
+            <TrendingUp className="w-5 h-5 text-[#0299A7]" />
           </div>
           <p className="text-2xl font-black text-slate-900 mt-2">₦{totalGrossPremium.toLocaleString()}</p>
           <p className="text-[11px] text-slate-500 mt-1">Billed annually</p>
@@ -87,16 +83,16 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Earned Commission Wallet</p>
-            <Wallet className="w-5 h-5 text-emerald-600" />
+            <Wallet className="w-5 h-5 text-[#037A86]" />
           </div>
-          <p className="text-2xl font-black text-emerald-700 mt-2">₦{totalEarnedCommission.toLocaleString()}</p>
-          <p className="text-[11px] text-emerald-600 font-semibold mt-1">Net after FIRS Withholding Tax</p>
+          <p className="text-2xl font-black text-[#037A86] mt-2">₦{totalEarnedCommission.toLocaleString()}</p>
+          <p className="text-[11px] text-slate-500 font-semibold mt-1">Net after FIRS Withholding Tax</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Assigned Tier Discount</p>
-            <Award className="w-5 h-5 text-teal-600" />
+            <Award className="w-5 h-5 text-[#0299A7]" />
           </div>
           <p className="text-2xl font-black text-slate-900 mt-2">
             {broker.tierLevel === 'ELITE_PARTNER' ? '15%' : broker.tierLevel === 'CORPORATE_BROKER' ? '10%' : '5%'} Off
@@ -107,46 +103,46 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
 
       {/* Account Verification Profile Summary */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
-        <h3 className="font-bold text-slate-900 text-base flex items-center space-x-2 border-b border-slate-200 pb-3">
-          <UserCheck className="w-5 h-5 text-teal-600" />
+        <h3 className="font-bold text-[#037A86] text-base flex items-center space-x-2 border-b border-slate-200 pb-3">
+          <UserCheck className="w-5 h-5 text-[#0299A7]" />
           <span>Accreditation & Payout Account Profile</span>
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-[10px] text-slate-400 font-bold uppercase">NAICOM License No.</p>
+          <div className="p-3.5 bg-[#F2F2F0] rounded-xl border border-slate-200">
+            <p className="text-[10px] text-slate-500 font-bold uppercase">NAICOM License No.</p>
             <p className="font-mono font-bold text-slate-900 mt-1">{broker.naicomLicenseNumber || 'NAICOM/BRK/2024/089'}</p>
           </div>
 
-          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-[10px] text-slate-400 font-bold uppercase">NHIA Accreditation No.</p>
+          <div className="p-3.5 bg-[#F2F2F0] rounded-xl border border-slate-200">
+            <p className="text-[10px] text-slate-500 font-bold uppercase">NHIA Accreditation No.</p>
             <p className="font-mono font-bold text-slate-900 mt-1">{broker.nhiaAccreditationNo || 'NHIA/ACT/9902'}</p>
           </div>
 
-          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-[10px] text-slate-400 font-bold uppercase">Tax Identification Number (TIN)</p>
+          <div className="p-3.5 bg-[#F2F2F0] rounded-xl border border-slate-200">
+            <p className="text-[10px] text-slate-500 font-bold uppercase">Tax Identification Number (TIN)</p>
             <p className="font-mono font-bold text-slate-900 mt-1">{broker.taxIdNumber || 'TIN-98214019-0001'}</p>
           </div>
 
-          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-            <p className="text-[10px] text-slate-400 font-bold uppercase">Commission NUBAN Payout</p>
+          <div className="p-3.5 bg-[#F2F2F0] rounded-xl border border-slate-200">
+            <p className="text-[10px] text-slate-500 font-bold uppercase">Commission NUBAN Payout</p>
             <p className="font-bold text-slate-900 mt-1">{broker.bankName || 'GTBank'}</p>
-            <p className="font-mono text-slate-600">{broker.accountNumber || '0123456789'}</p>
+            <p className="font-mono text-slate-700">{broker.accountNumber || '0123456789'}</p>
           </div>
         </div>
       </div>
 
       {/* Read-Only Corporate Bids / Quotes */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-        <h3 className="font-bold text-slate-900 text-base mb-4 flex items-center space-x-2">
-          <FileText className="w-5 h-5 text-teal-600" />
+        <h3 className="font-bold text-[#037A86] text-base mb-4 flex items-center space-x-2">
+          <FileText className="w-5 h-5 text-[#0299A7]" />
           <span>Active Corporate Quotes & Bids Log</span>
         </h3>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+              <tr className="border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
                 <th className="pb-3">Client Company</th>
                 <th className="pb-3">HR Contact</th>
                 <th className="pb-3">Enrolled Lives</th>
@@ -182,8 +178,8 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         d.stage === 'CLOSED_WON'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-amber-100 text-amber-800'
+                          ? 'bg-[#E0F2F4] text-[#037A86]'
+                          : 'bg-amber-100 text-amber-900'
                       }`}
                     >
                       {d.stage}
