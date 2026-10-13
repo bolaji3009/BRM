@@ -56,10 +56,9 @@ export default function Home() {
       lga: newBrokerData.lga || 'Ikeja',
       address: newBrokerData.address || 'Lagos, Nigeria',
       status: 'PENDING_VERIFICATION',
-      tierLevel: 'RETAIL_AGENT',
+      tierLevel: 'RETAIL_PARTNER',
       riskScore: 10,
       ndpaConsent: true,
-      quizPassed: false,
       brokerCode: `HMO-BRK-${Math.floor(1000 + Math.random() * 9000)}`,
       createdAt: new Date().toISOString(),
     };

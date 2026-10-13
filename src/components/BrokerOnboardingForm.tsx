@@ -21,7 +21,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     companyName: broker.companyName || '',
-    brokerType: broker.brokerType || 'CORPORATE',
+    brokerType: (broker.brokerType === 'RETAIL' ? 'RETAIL' : 'CORPORATE') as 'CORPORATE' | 'RETAIL',
     rcNumber: broker.rcNumber || '',
     naicomLicenseNumber: broker.naicomLicenseNumber || '',
     naicomExpiryDate: broker.naicomExpiryDate || '',
@@ -41,7 +41,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
 
   const [uploadedDocs, setUploadedDocs] = useState<{ [key: string]: string }>({
     cacCert: broker.rcNumber ? 'CAC_Registration_Certificate_Apex.pdf' : '',
-    naicomLicense: broker.naicomLicenseNumber ? 'NAICOM_Broker_License_2024.pdf' : '',
+    naicomLicense: broker.naicomLicenseNumber ? 'NAICOM_Broker_License_2026.pdf' : '',
     taxClearance: broker.taxIdNumber ? 'Tax_Clearance_Certificate.pdf' : '',
     indemnityCover: 'Professional_Indemnity_Cover.pdf',
   });
@@ -72,7 +72,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
     });
   };
 
-  const isIndividual = formData.brokerType === 'INDIVIDUAL';
+  const isRetail = formData.brokerType === 'RETAIL';
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -88,7 +88,9 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
               Broker Onboarding & Verification (KYC)
             </h2>
             <p className="text-slate-600 text-sm mt-1">
-              Complete mandatory corporate registration, licensing validation, and payout account verification.
+              {isRetail
+                ? 'Register as a Retail Referral Partner for MApp referral-code commission attribution.'
+                : 'Complete corporate registration, NAICOM licensing, and payout account verification.'}
             </p>
           </div>
 
@@ -114,32 +116,30 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-8 bg-[#FFFFFF]">
-        {/* Step 1: Broker Profile & Entity Details */}
+        {/* Step 1: Broker SBU & Entity Details */}
         <div>
           <h3 className="text-lg font-bold text-[#037A86] flex items-center space-x-2 pb-2 border-b border-slate-200">
             <Building2 className="w-5 h-5 text-[#0299A7]" />
-            <span>1. {isIndividual ? 'Individual Agent Profile' : 'Corporate Profile & Entity Details'}</span>
+            <span>1. {isRetail ? 'Retail SBU Referral Partner Profile' : 'Corporate SBU Brokerage Profile'}</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Broker Partnership Type</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Strategic Business Unit (SBU)</label>
               <select
                 name="brokerType"
                 value={formData.brokerType}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
               >
-                <option value="CORPORATE">Corporate Brokerage Firm</option>
-                <option value="INDIVIDUAL">Individual Licensed Agent</option>
-                <option value="AGGREGATOR">Retail Aggregator Network</option>
-                <option value="BANCASSURANCE">Bancassurance Partner</option>
+                <option value="CORPORATE">Corporate SBU Brokerage Firm</option>
+                <option value="RETAIL">Retail SBU Referral Partner (MApp)</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isIndividual ? 'Agent Full Name' : 'Company Registered Name'}
+                {isRetail ? 'Referral Partner Full Name' : 'Company Registered Name'}
               </label>
               <input
                 type="text"
@@ -147,12 +147,12 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                 value={formData.companyName}
                 onChange={handleInputChange}
                 required
-                placeholder={isIndividual ? 'e.g. Babajide Chukwuma' : 'e.g. Apex Insurance Brokers Ltd'}
+                placeholder={isRetail ? 'e.g. Babajide Chukwuma' : 'e.g. Apex Insurance Brokers Ltd'}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
               />
             </div>
 
-            {!isIndividual && (
+            {!isRetail && (
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">CAC Registration (RC Number)</label>
                 <input
@@ -167,7 +167,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
               </div>
             )}
 
-            {!isIndividual && (
+            {!isRetail && (
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">NAICOM License Number</label>
                 <input
@@ -176,13 +176,13 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                   value={formData.naicomLicenseNumber}
                   onChange={handleInputChange}
                   required
-                  placeholder="NAICOM/BRK/2024/089"
+                  placeholder="NAICOM/BRK/2026/089"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
                 />
               </div>
             )}
 
-            {!isIndividual && (
+            {!isRetail && (
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">NAICOM Expiry Date</label>
                 <input
@@ -196,7 +196,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
               </div>
             )}
 
-            {!isIndividual && (
+            {!isRetail && (
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">NHIA Accreditation Number</label>
                 <input
@@ -297,8 +297,8 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
           </div>
         </div>
 
-        {/* Step 3: Required Regulatory Uploads - Only shown for Corporate/Aggregator/Bancassurance */}
-        {!isIndividual && (
+        {/* Step 3: Required Regulatory Uploads - Only shown for Corporate SBU */}
+        {!isRetail && (
           <div>
             <h3 className="text-lg font-bold text-[#037A86] flex items-center space-x-2 pb-2 border-b border-slate-200">
               <FileCheck2 className="w-5 h-5 text-[#0299A7]" />

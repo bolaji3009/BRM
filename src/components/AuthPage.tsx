@@ -39,38 +39,36 @@ export const AuthPage: React.FC<AuthPageProps> = ({
       return;
     }
 
-    // Individual Broker Test Creds
+    // Retail Partner Test Creds
     if (email.trim().toLowerCase() === 'individual@broker.ng' && password === 'broker123') {
-      const indBroker = mockBrokers.find((b) => b.brokerType === 'INDIVIDUAL') || {
-        id: 'brk-ind-001',
-        userId: 'usr-ind-001',
+      const retailBroker = mockBrokers.find((b) => b.brokerType === 'RETAIL') || {
+        id: 'brk-retail-2',
+        userId: 'usr-broker-2',
+        brokerCode: 'HMO-BRK-2002',
+        brokerType: 'RETAIL' as const,
         companyName: 'Babajide Chukwuma',
-        brokerType: 'INDIVIDUAL' as const,
-        naicomLicenseNumber: 'NAICOM/IND/2024/991',
-        naicomExpiryDate: '2026-12-31',
-        nhiaAccreditationNo: 'NHIA/IND/001',
-        accountNumber: '0987654321',
+        taxIdNumber: 'TIN-48201948-0002',
+        vatCompliant: false,
+        nin: '99887766554',
         bankName: 'Zenith Bank',
+        accountNumber: '2088192039',
         accountName: 'Babajide Chukwuma',
-        phone: '+234 803 111 2222',
+        phone: '+234 802 999 8877',
         state: 'Lagos',
         lga: 'Ikeja',
         address: '12 Allen Avenue, Ikeja, Lagos',
         status: 'ACTIVE' as const,
-        tierLevel: 'RETAIL_AGENT' as const,
+        tierLevel: 'RETAIL_PARTNER' as const,
         riskScore: 10,
-        vatCompliant: false,
         ndpaConsent: true,
-        quizPassed: true,
-        brokerCode: 'HMO-BRK-IND-1002',
         createdAt: new Date().toISOString(),
       };
-      onLogin('BROKER', email, indBroker);
+      onLogin('BROKER', email, retailBroker);
       return;
     }
 
     // Check if matching any broker email in system
-    const matched = mockBrokers.find((b) => b.companyName.toLowerCase().includes('apex') && email.toLowerCase().includes('apex'));
+    const matched = mockBrokers.find((b) => email.toLowerCase().includes('apex') || email.toLowerCase().includes('broker'));
     if (matched && password === 'broker123') {
       onLogin('BROKER', email, matched);
       return;
@@ -99,7 +97,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
         </div>
         <h1 className="text-3xl font-extrabold tracking-tight text-[#037A86]">Mitera Health HMO</h1>
         <p className="text-slate-600 text-xs mt-1 font-bold tracking-wide uppercase">
-          Broker Relationship Management (BRM) Portal
+          Broker Management System (Corporate & Retail SBUs)
         </p>
       </div>
 
@@ -111,7 +109,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               <span>Portal Sign In</span>
             </h2>
             <span className="text-[10px] bg-[#E0F2F4] text-[#037A86] font-bold px-2.5 py-1 rounded-full border border-teal-200">
-              NHIA Gated Access
+              SBU Gated Access
             </span>
           </div>
 
@@ -231,7 +229,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               >
                 <div>
                   <span className="text-[10px] bg-amber-600 text-white font-bold px-1.5 py-0.5 rounded mr-2 font-sans">
-                    Individual Agent
+                    Retail Partner
                   </span>
                   <p className="text-slate-900 font-bold inline">individual@broker.ng</p>
                 </div>
@@ -305,7 +303,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             <div>
               <h2 className="text-2xl font-extrabold text-[#037A86]">Broker Self-Service Onboarding & Registration</h2>
               <p className="text-slate-600 text-xs mt-0.5">
-                Fill in your entity & accreditation details once to instantly create your broker account and submitted profile.
+                Fill in your SBU entity & accreditation details to instantly register your broker account.
               </p>
             </div>
 
@@ -337,10 +335,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               lga: 'Ikeja',
               address: '',
               status: 'PENDING_VERIFICATION',
-              tierLevel: 'RETAIL_AGENT',
+              tierLevel: 'CORPORATE_BROKER',
               riskScore: 10,
               ndpaConsent: false,
-              quizPassed: false,
               createdAt: new Date().toISOString(),
             }}
             onUpdateBroker={(data) => handleSignupSubmit(data)}

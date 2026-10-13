@@ -5,8 +5,11 @@ import {
   TierLevel,
   HospitalTier,
   DealStage,
-  CommissionStatus,
-  VerificationStatus,
+  CommissionLifecycleStatus,
+  ReferralCodeData,
+  CorporateAgreementData,
+  PaymentBatchData,
+  DisputeData,
 } from './types';
 
 export interface UserData {
@@ -29,7 +32,6 @@ export interface BrokerData {
   taxIdNumber?: string | null;
   vatCompliant: boolean;
   nin?: string | null;
-  bvn?: string | null;
   bankName?: string | null;
   accountNumber?: string | null;
   accountName?: string | null;
@@ -42,9 +44,6 @@ export interface BrokerData {
   riskScore: number;
   ndpaConsent: boolean;
   rejectionReason?: string | null;
-  quizPassed: boolean;
-  quizScore?: number | null;
-  certifiedAt?: string | null;
   createdAt: string;
 }
 
@@ -116,13 +115,14 @@ export interface CommissionData {
   brokerName?: string;
   quoteDealId?: string;
   companyName?: string;
+  sbu: 'CORPORATE' | 'RETAIL';
   grossPremium: number;
   commissionRate: number;
   grossCommission: number;
   whtRate: number;
   whtAmount: number;
   netPayout: number;
-  status: CommissionStatus;
+  status: CommissionLifecycleStatus;
   payoutRef?: string;
   paidAt?: string;
   createdAt: string;
@@ -141,12 +141,11 @@ export interface DocumentData {
   createdAt: string;
 }
 
-// In-Memory Database Store for robust offline execution & instant reactivity
 class MockDatabase {
   users: UserData[] = [
     { id: 'usr-admin-1', email: 'admin@miterahealth.com.ng', name: 'Dr. Temitope Adebayo', role: 'HMO_ADMIN' },
-    { id: 'usr-broker-1', email: 'broker@apexinsurance.ng', name: 'Chidi Okonkwo', role: 'BROKER' },
-    { id: 'usr-broker-2', email: 'sales@primehealth.ng', name: 'Fatima Umar', role: 'BROKER' },
+    { id: 'usr-broker-1', email: 'corporate@apexinsurance.ng', name: 'Chidi Okonkwo', role: 'BROKER' },
+    { id: 'usr-broker-2', email: 'individual@broker.ng', name: 'Babajide Chukwuma', role: 'BROKER' },
   ];
 
   brokers: BrokerData[] = [
@@ -163,7 +162,6 @@ class MockDatabase {
       taxIdNumber: 'TIN-98214019-0001',
       vatCompliant: true,
       nin: '10293847561',
-      bvn: '22114455667',
       bankName: 'Guaranty Trust Bank (GTBank)',
       accountNumber: '0123456789',
       accountName: 'Apex Insurance Brokers Ltd',
@@ -175,40 +173,96 @@ class MockDatabase {
       tierLevel: 'ELITE_PARTNER',
       riskScore: 12,
       ndpaConsent: true,
-      quizPassed: true,
-      quizScore: 90,
-      certifiedAt: '2024-01-15T10:00:00.000Z',
       createdAt: '2024-01-10T09:00:00.000Z',
     },
     {
-      id: 'brk-prime-2',
+      id: 'brk-retail-2',
       userId: 'usr-broker-2',
-      brokerCode: 'HMO-BRK-1002',
-      brokerType: 'CORPORATE',
-      companyName: 'PrimeCare Financial & Insurance Partners',
-      rcNumber: 'RC-8839201',
-      naicomLicenseNumber: 'NAICOM/BRK/2024/311',
-      naicomExpiryDate: '2025-08-30',
-      nhiaAccreditationNo: 'NHIA/ACT/4410',
-      taxIdNumber: 'TIN-33291048-0001',
-      vatCompliant: true,
+      brokerCode: 'HMO-BRK-2002',
+      brokerType: 'RETAIL',
+      companyName: 'Babajide Chukwuma',
+      rcNumber: null,
+      naicomLicenseNumber: null,
+      naicomExpiryDate: null,
+      nhiaAccreditationNo: null,
+      taxIdNumber: 'TIN-48201948-0002',
+      vatCompliant: false,
       nin: '99887766554',
-      bvn: '22998877112',
       bankName: 'Zenith Bank',
       accountNumber: '2088192039',
-      accountName: 'PrimeCare Financial Partners',
+      accountName: 'Babajide Chukwuma',
       phone: '+234 802 999 8877',
-      state: 'FCT - Abuja',
-      lga: 'Abuja Municipal',
-      address: 'Plot 450 Central Business District, Abuja',
-      status: 'PENDING_VERIFICATION',
-      tierLevel: 'CORPORATE_BROKER',
-      riskScore: 25,
+      state: 'Lagos',
+      lga: 'Ikeja',
+      address: '12 Allen Avenue, Ikeja, Lagos',
+      status: 'ACTIVE',
+      tierLevel: 'RETAIL_PARTNER',
+      riskScore: 10,
       ndpaConsent: true,
-      quizPassed: true,
-      quizScore: 80,
-      certifiedAt: '2024-02-01T14:30:00.000Z',
       createdAt: '2024-02-01T12:00:00.000Z',
+    },
+  ];
+
+  referralCodes: ReferralCodeData[] = [
+    {
+      id: 'ref-1',
+      code: 'MAPP-BABAJIDE-01',
+      brokerId: 'brk-retail-2',
+      brokerName: 'Babajide Chukwuma',
+      deepLink: 'https://mapp.miterahealth.com/enrol?ref=MAPP-BABAJIDE-01',
+      commissionRate: 3.0,
+      validFrom: '2026-01-01',
+      validTo: '2026-12-31',
+      isActive: true,
+      totalConversions: 24,
+      totalEligiblePremium: 1200000,
+      totalCommissionEarned: 36000,
+    },
+  ];
+
+  corporateAgreements: CorporateAgreementData[] = [
+    {
+      id: 'agr-1',
+      agreementNumber: 'MTR-AGR-2026-001',
+      brokerId: 'brk-apex-1',
+      brokerName: 'Apex Insurance Brokers Ltd',
+      clientName: 'Zenith Logistics & Maritime Ltd',
+      agreedRate: 10.0,
+      brokerSplitPct: 100,
+      effectiveFrom: '2026-01-01',
+      effectiveTo: '2026-12-31',
+      status: 'APPROVED',
+      signedDocumentUrl: '/docs/Signed_Agreement_Zenith.pdf',
+    },
+  ];
+
+  paymentBatches: PaymentBatchData[] = [
+    {
+      id: 'batch-1',
+      batchNumber: 'MTR-PAY-2026-B1',
+      sbu: 'CORPORATE',
+      itemCount: 1,
+      grossAmount: 2579750,
+      whtAmount: 128987.5,
+      netPayoutAmount: 2450762.5,
+      status: 'DISBURSED',
+      createdAt: '2026-03-20T10:00:00.000Z',
+      approvedBy: 'Dr. Temitope Adebayo',
+      paymentReference: 'GTB-DISB-99210',
+    },
+  ];
+
+  disputes: DisputeData[] = [
+    {
+      id: 'disp-1',
+      disputeNumber: 'DSP-2026-001',
+      brokerId: 'brk-retail-2',
+      brokerName: 'Babajide Chukwuma',
+      clientOrCode: 'MAPP-BABAJIDE-01',
+      category: 'MISSING_ATTRIBUTION',
+      explanation: 'Enrolment for Client Mr. Kunle Adeleke on MApp did not auto-attribute code MAPP-BABAJIDE-01.',
+      status: 'IN_REVIEW',
+      createdAt: '2026-03-22T14:00:00.000Z',
     },
   ];
 
@@ -217,10 +271,10 @@ class MockDatabase {
       id: 'plan-bronze',
       code: 'MITERA-BRONZE',
       name: 'Mitera Retail Bronze Care',
-      category: 'SME',
-      description: 'Essential primary and secondary care coverage for SMEs and retail workforce.',
+      category: 'Retail',
+      description: 'Essential primary and secondary care coverage for individuals and retail workforce.',
       annualBaseRate: 45000,
-      minLives: 5,
+      minLives: 1,
       hospitalTier: 'TIER_1_BASIC',
       features: [
         'General & Specialist Consultations',
@@ -266,22 +320,6 @@ class MockDatabase {
         'Emergency Air Ambulance Support',
       ],
     },
-    {
-      id: 'plan-maternity',
-      code: 'MITERA-MATERNITY-CARD',
-      name: 'Mitera Maternity Savings Card® Plan',
-      category: 'Maternity',
-      description: 'Targeted care plan and savings model for expectant mothers and infant healthcare.',
-      annualBaseRate: 120000,
-      minLives: 1,
-      hospitalTier: 'TIER_2_STANDARD',
-      features: [
-        'Antenatal Care & Routine Scans',
-        'Normal Delivery & C-Section Cover',
-        'Immunization for Newborns (up to 1 Year)',
-        'Postnatal Care & Pediatric Consultations',
-      ],
-    },
   ];
 
   hospitals: HospitalData[] = [
@@ -321,78 +359,6 @@ class MockDatabase {
       services: ['Nephrology', 'Surgery', 'Obstetrics', 'Pediatrics', 'Laboratory'],
       active: true,
     },
-    {
-      id: 'hosp-4',
-      name: 'First Cardiology Consultants',
-      state: 'Lagos',
-      lga: 'Ikoyi',
-      address: '20A Lugard Avenue, Ikoyi, Lagos',
-      tier: 'TIER_4_EXECUTIVE',
-      phone: '+234 1 463 0720',
-      email: 'info@firstcardiology.org',
-      services: ['Advanced Cardiovascular Care', 'ICU', 'Executive Diagnostics'],
-      active: true,
-    },
-    {
-      id: 'hosp-5',
-      name: 'Nizamiye Hospital Abuja',
-      state: 'FCT - Abuja',
-      lga: 'Abuja Municipal',
-      address: 'Plot 112 CAD, Sector Centre A, Life Camp, Abuja',
-      tier: 'TIER_3_PREMIUM',
-      phone: '+234 818 888 8811',
-      email: 'info@nizamiye.ng',
-      services: ['Trauma Center', 'MRI/CT Scan', 'Neurosurgery', 'Executive Care'],
-      active: true,
-    },
-    {
-      id: 'hosp-6',
-      name: 'Limi Hospital Abuja',
-      state: 'FCT - Abuja',
-      lga: 'Abuja Municipal',
-      address: '14 Constitution Avenue, Central Business District, Abuja',
-      tier: 'TIER_2_STANDARD',
-      phone: '+234 9 291 3000',
-      email: 'help@limihospital.org',
-      services: ['Family Medicine', 'Pediatrics', 'Antenatal', 'Dental', 'Pharmacy'],
-      active: true,
-    },
-    {
-      id: 'hosp-7',
-      name: 'University College Hospital (UCH) Private Wing',
-      state: 'Oyo',
-      lga: 'Ibadan North',
-      address: 'Queen Elizabeth Road, Ibadan',
-      tier: 'TIER_2_STANDARD',
-      phone: '+234 2 241 0088',
-      email: 'info@uch-ibadan.org.ng',
-      services: ['Specialist Care', 'Surgery', 'Oncology', 'Renal Unit'],
-      active: true,
-    },
-    {
-      id: 'hosp-8',
-      name: 'Memphys Hospital Enugu',
-      state: 'Enugu',
-      lga: 'Enugu North',
-      address: 'Km 2 Enugu-Onitsha Expressway, Enugu',
-      tier: 'TIER_2_STANDARD',
-      phone: '+234 42 258 800',
-      email: 'contact@memphys.org',
-      services: ['Neurosurgery', 'Spine Surgery', 'CT Scan', 'Intensive Care'],
-      active: true,
-    },
-    {
-      id: 'hosp-9',
-      name: 'Bridge Clinic Port Harcourt',
-      state: 'Rivers',
-      lga: 'Port Harcourt',
-      address: '41 Stadium Road, Port Harcourt',
-      tier: 'TIER_2_STANDARD',
-      phone: '+234 84 303 500',
-      email: 'enquiries@thebridgeclinic.com',
-      services: ['Fertility', 'Gynecological Care', 'Maternity', 'General OPD'],
-      active: true,
-    },
   ];
 
   engagements: EngagementData[] = [
@@ -401,20 +367,10 @@ class MockDatabase {
       brokerId: 'brk-apex-1',
       title: 'Corporate Pitch Presentation - Zenith Logistics',
       channel: 'MEETING',
-      notes: 'Presented Mitera Corporate Gold and Silver plans to HR Director. Requested customized hospital directory list including Lagoon VI.',
+      notes: 'Presented Mitera Corporate Gold and Silver plans to HR Director. Agreed on 10% brokerage split.',
       loggedBy: 'Chidi Okonkwo (Apex Insurance)',
-      scheduledAt: '2024-03-10T10:00:00.000Z',
-      createdAt: '2024-03-10T11:30:00.000Z',
-    },
-    {
-      id: 'eng-2',
-      brokerId: 'brk-apex-1',
-      title: 'Rate Sheet Verification & Volume Discount Discussion',
-      channel: 'CALL',
-      notes: 'Agreed on 15% volume tier discount for Zenith Logistics staff count exceeding 250 enrollees.',
-      loggedBy: 'Dr. Temitope Adebayo (Mitera HMO)',
-      scheduledAt: '2024-03-12T14:00:00.000Z',
-      createdAt: '2024-03-12T15:00:00.000Z',
+      scheduledAt: '2026-03-10T10:00:00.000Z',
+      createdAt: '2026-03-10T11:30:00.000Z',
     },
   ];
 
@@ -436,25 +392,7 @@ class MockDatabase {
       totalPremium: 25797500,
       discountApplied: 15,
       notes: '280 employees total. 30 Executives on Gold Plan, 250 Staff on Silver Plan. 15% corporate volume discount applied.',
-      createdAt: '2024-03-14T09:00:00.000Z',
-    },
-    {
-      id: 'deal-2',
-      brokerId: 'brk-apex-1',
-      brokerName: 'Apex Insurance Brokers Ltd',
-      companyName: 'Kwara Agro Industries Ltd',
-      contactPerson: 'Hajiya Amina Bello',
-      contactEmail: 'a.bello@kwaraagro.com',
-      contactPhone: '+234 805 112 3344',
-      stage: 'PROPOSAL_SENT',
-      totalLives: 120,
-      breakout: [
-        { planId: 'plan-silver', name: 'Mitera Corporate Silver Plan', staffCount: 120, finalPricePerHead: 80750, subtotal: 9690000 },
-      ],
-      totalPremium: 9690000,
-      discountApplied: 15,
-      notes: 'Corporate pitch sent with custom hospital network list in Kwara & Lagos.',
-      createdAt: '2024-03-18T11:00:00.000Z',
+      createdAt: '2026-03-14T09:00:00.000Z',
     },
   ];
 
@@ -465,6 +403,7 @@ class MockDatabase {
       brokerName: 'Apex Insurance Brokers Ltd',
       quoteDealId: 'deal-1',
       companyName: 'Zenith Logistics & Maritime Ltd',
+      sbu: 'CORPORATE',
       grossPremium: 25797500,
       commissionRate: 10.0,
       grossCommission: 2579750,
@@ -472,9 +411,24 @@ class MockDatabase {
       whtAmount: 128987.5,
       netPayout: 2450762.5,
       status: 'PAID',
-      payoutRef: 'PAY-MTR-2024-991',
-      paidAt: '2024-03-20T16:00:00.000Z',
-      createdAt: '2024-03-15T10:00:00.000Z',
+      payoutRef: 'PAY-MTR-2026-991',
+      paidAt: '2026-03-20T16:00:00.000Z',
+      createdAt: '2026-03-15T10:00:00.000Z',
+    },
+    {
+      id: 'comm-2',
+      brokerId: 'brk-retail-2',
+      brokerName: 'Babajide Chukwuma',
+      companyName: 'MApp Retail Enrolments (24 Lives)',
+      sbu: 'RETAIL',
+      grossPremium: 1200000,
+      commissionRate: 3.0,
+      grossCommission: 36000,
+      whtRate: 10.0,
+      whtAmount: 3600,
+      netPayout: 32400,
+      status: 'ELIGIBLE',
+      createdAt: '2026-03-21T08:00:00.000Z',
     },
   ];
 
@@ -489,31 +443,7 @@ class MockDatabase {
       mimeType: 'application/pdf',
       isVerified: true,
       watermarked: true,
-      createdAt: '2024-01-10T09:15:00.000Z',
-    },
-    {
-      id: 'doc-2',
-      brokerId: 'brk-apex-1',
-      docType: 'NAICOM_LICENSE',
-      fileUrl: '/mock/naicom_license_apex.pdf',
-      fileName: 'NAICOM_Broker_License_2024.pdf',
-      fileSize: 840200,
-      mimeType: 'application/pdf',
-      isVerified: true,
-      watermarked: true,
-      createdAt: '2024-01-10T09:16:00.000Z',
-    },
-    {
-      id: 'doc-3',
-      brokerId: 'brk-prime-2',
-      docType: 'CAC_CERT',
-      fileUrl: '/mock/cac_certificate_prime.pdf',
-      fileName: 'CAC_Cert_PrimeCare.pdf',
-      fileSize: 950000,
-      mimeType: 'application/pdf',
-      isVerified: false,
-      watermarked: true,
-      createdAt: '2024-02-01T12:05:00.000Z',
+      createdAt: '2026-01-10T09:15:00.000Z',
     },
   ];
 }
