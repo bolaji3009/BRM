@@ -10,6 +10,7 @@ interface PipelineTrackerProps {
   deals: QuoteDealData[];
   engagements: EngagementData[];
   broker: BrokerData;
+  onCreateDeal?: (newDeal: Partial<QuoteDealData>) => void;
   onAddEngagement: (newEng: Partial<EngagementData>) => void;
   onUpdateDealStage: (dealId: string, newStage: any) => void;
 }
@@ -26,6 +27,7 @@ export const PipelineTracker: React.FC<PipelineTrackerProps> = ({
   deals,
   engagements,
   broker,
+  onCreateDeal,
   onAddEngagement,
   onUpdateDealStage,
 }) => {
@@ -34,6 +36,43 @@ export const PipelineTracker: React.FC<PipelineTrackerProps> = ({
   const [newTitle, setNewTitle] = useState('');
   const [newChannel, setNewChannel] = useState('CALL');
   const [newNotes, setNewNotes] = useState('');
+
+  // Add New Deal Pipeline Modal State
+  const [showDealModal, setShowDealModal] = useState(false);
+  const [dealForm, setDealForm] = useState({
+    companyName: 'Cadbury Nigeria Plc',
+    contactPerson: 'Oluwaseun Bakare',
+    contactEmail: 'o.bakare@cadbury.ng',
+    contactPhone: '+234 803 222 4455',
+    stage: 'PRICING_REVIEW' as const,
+    totalLives: 150,
+    totalPremium: 12500000,
+    notes: 'Opportunity derived from Q1 Corporate Pitch.',
+  });
+
+  const handleCreateDealSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newDealPayload: Partial<QuoteDealData> = {
+      brokerId: broker.id,
+      brokerName: broker.companyName,
+      companyName: dealForm.companyName,
+      contactPerson: dealForm.contactPerson,
+      contactEmail: dealForm.contactEmail,
+      contactPhone: dealForm.contactPhone,
+      stage: dealForm.stage as any,
+      totalLives: Number(dealForm.totalLives),
+      breakout: [],
+      totalPremium: Number(dealForm.totalPremium),
+      discountApplied: 10,
+      notes: dealForm.notes,
+    };
+
+    if (onCreateDeal) {
+      onCreateDeal(newDealPayload);
+    }
+    setShowDealModal(false);
+    alert('New Corporate Deal successfully created and added to CRM Pipeline!');
+  };
 
   const handleLogInteraction = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +110,14 @@ export const PipelineTracker: React.FC<PipelineTrackerProps> = ({
           </div>
 
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setShowDealModal(true)}
+              className="px-4 py-2.5 bg-[#0299A7] hover:bg-[#037A86] text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add New Deal Pipeline</span>
+            </button>
+
             <div className="bg-[#E0F2F4] p-3 rounded-xl border border-teal-200 text-right">
               <p className="text-[10px] text-[#037A86] font-bold uppercase">Total Pipeline Value</p>
               <p className="text-xl font-black text-[#0299A7] font-mono">
@@ -199,6 +246,136 @@ export const PipelineTracker: React.FC<PipelineTrackerProps> = ({
           </div>
         )}
       </div>
+
+      {/* Add New Deal Pipeline Modal */}
+      {showDealModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+              <h3 className="text-lg font-extrabold text-[#037A86]">Add New Deal Pipeline</h3>
+              <button
+                onClick={() => setShowDealModal(false)}
+                className="text-xs font-bold text-slate-500 hover:text-slate-800"
+              >
+                Close
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateDealSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Corporate Client Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={dealForm.companyName}
+                    onChange={(e) => setDealForm({ ...dealForm, companyName: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Key HR / Executive Contact</label>
+                  <input
+                    type="text"
+                    required
+                    value={dealForm.contactPerson}
+                    onChange={(e) => setDealForm({ ...dealForm, contactPerson: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Contact Corporate Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={dealForm.contactEmail}
+                    onChange={(e) => setDealForm({ ...dealForm, contactEmail: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Contact Phone Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={dealForm.contactPhone}
+                    onChange={(e) => setDealForm({ ...dealForm, contactPhone: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Enrolled Workforce Lives</label>
+                  <input
+                    type="number"
+                    min={1}
+                    required
+                    value={dealForm.totalLives}
+                    onChange={(e) => setDealForm({ ...dealForm, totalLives: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold font-mono focus:ring-2 focus:ring-[#0299A7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Estimated Annual Premium (₦)</label>
+                  <input
+                    type="number"
+                    step={50000}
+                    required
+                    value={dealForm.totalPremium}
+                    onChange={(e) => setDealForm({ ...dealForm, totalPremium: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-[#0299A7] bg-[#E0F2F4] text-[#037A86] rounded-xl font-bold font-mono focus:ring-2 focus:ring-[#0299A7]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Pipeline Stage</label>
+                <select
+                  value={dealForm.stage}
+                  onChange={(e) => setDealForm({ ...dealForm, stage: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                >
+                  <option value="LEAD">Lead Generation</option>
+                  <option value="PRICING_REVIEW">Pricing & Rate Review</option>
+                  <option value="PROPOSAL_SENT">Proposal Sent</option>
+                  <option value="CLOSED_WON">Closed Won</option>
+                  <option value="CLOSED_LOST">Closed Lost</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Opportunity Notes & Scope</label>
+                <textarea
+                  rows={2}
+                  value={dealForm.notes}
+                  onChange={(e) => setDealForm({ ...dealForm, notes: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowDealModal(false)}
+                  className="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#0299A7] text-white text-xs font-bold rounded-xl shadow-md hover:bg-[#037A86]"
+                >
+                  Create & Log Deal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Log Touchpoint Modal */}
       {showLogModal && (

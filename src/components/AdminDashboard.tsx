@@ -707,6 +707,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             deals={deals}
             engagements={engagements}
             broker={brokers[0]}
+            onCreateDeal={onCreateDeal}
             onAddEngagement={onAddEngagement || (() => {})}
             onUpdateDealStage={onUpdateDealStage || (() => {})}
           />
