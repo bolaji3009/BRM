@@ -180,7 +180,7 @@ export const HospitalSearchModule: React.FC<HospitalSearchModuleProps> = ({ hosp
                   </span>
                   <span className="text-[10px] text-[#037A86] font-bold flex items-center space-x-1">
                     <CheckCircle className="w-3 h-3 text-[#0299A7]" />
-                    <span>NHIA Accredited</span>
+                    <span>Verified Network Provider</span>
                   </span>
                 </div>
 

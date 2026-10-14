@@ -22,6 +22,7 @@ interface CategoryInput {
   categoryName: string;
   planId: string;
   staffCount: number;
+  customPricePerHead?: number;
 }
 
 export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
@@ -36,14 +37,14 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
   const [notes] = useState('');
 
   const [categories, setCategories] = useState<CategoryInput[]>([
-    { categoryName: 'Executive Team', planId: plans[2]?.id || 'plan-gold', staffCount: 15 },
-    { categoryName: 'Core Operations Staff', planId: plans[1]?.id || 'plan-silver', staffCount: 85 },
+    { categoryName: 'Executive Team', planId: plans[3]?.id || plans[0].id, staffCount: 15, customPricePerHead: 220000 },
+    { categoryName: 'Core Operations Staff', planId: plans[1]?.id || plans[0].id, staffCount: 85, customPricePerHead: 95000 },
   ]);
 
   const addCategory = () => {
     setCategories([
       ...categories,
-      { categoryName: `Staff Group ${categories.length + 1}`, planId: plans[0]?.id || 'plan-bronze', staffCount: 20 },
+      { categoryName: `Staff Group ${categories.length + 1}`, planId: plans[0]?.id || 'plan-mi-shield', staffCount: 20, customPricePerHead: plans[0]?.annualBaseRate || 65000 },
     ]);
   };
 
@@ -78,7 +79,9 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
     let grossTotal = 0;
     const breakout = categories.map((cat) => {
       const selectedPlan = plans.find((p) => p.id === cat.planId) || plans[0];
-      const baseRate = selectedPlan.annualBaseRate;
+      const baseRate = cat.customPricePerHead !== undefined && cat.customPricePerHead > 0
+        ? cat.customPricePerHead
+        : selectedPlan.annualBaseRate;
       const finalPricePerHead = Math.round(baseRate * (1 - totalDiscountPct));
       const subtotal = finalPricePerHead * (cat.staffCount || 0);
 
@@ -306,55 +309,75 @@ export const QuoteGenerator: React.FC<QuoteGeneratorProps> = ({
             </div>
 
             <div className="space-y-3">
-              {categories.map((cat, idx) => (
-                <div key={idx} className="p-4 border border-[#E5E5E3] rounded-xl bg-white shadow-xs flex flex-col sm:flex-row items-center gap-3">
-                  <div className="w-full sm:w-1/3">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase">Group Label</label>
-                    <input
-                      type="text"
-                      value={cat.categoryName}
-                      onChange={(e) => updateCategory(idx, 'categoryName', e.target.value)}
-                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-[#0299A7]"
-                    />
-                  </div>
+              {categories.map((cat, idx) => {
+                const selectedP = plans.find((p) => p.id === cat.planId) || plans[0];
+                return (
+                  <div key={idx} className="p-4 border border-[#E5E5E3] rounded-xl bg-white shadow-xs flex flex-col sm:flex-row items-center gap-3">
+                    <div className="w-full sm:w-1/4">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase">Group Label</label>
+                      <input
+                        type="text"
+                        value={cat.categoryName}
+                        onChange={(e) => updateCategory(idx, 'categoryName', e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-[#0299A7]"
+                      />
+                    </div>
 
-                  <div className="w-full sm:w-1/2">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase">Select Plan Tier</label>
-                    <select
-                      value={cat.planId}
-                      onChange={(e) => updateCategory(idx, 'planId', e.target.value)}
-                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-[#0299A7]"
-                    >
-                      {plans.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} (₦{p.annualBaseRate.toLocaleString()}/head)
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    <div className="w-full sm:w-1/3">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase">Select Plan Product</label>
+                      <select
+                        value={cat.planId}
+                        onChange={(e) => {
+                          const newP = plans.find((p) => p.id === e.target.value);
+                          updateCategory(idx, 'planId', e.target.value);
+                          if (newP) {
+                            updateCategory(idx, 'customPricePerHead', newP.annualBaseRate);
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-medium focus:ring-2 focus:ring-[#0299A7]"
+                      >
+                        {plans.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} [{p.category}]
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div className="w-full sm:w-1/4">
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase">Headcount</label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={cat.staffCount}
-                      onChange={(e) => updateCategory(idx, 'staffCount', parseInt(e.target.value) || 0)}
-                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-bold focus:ring-2 focus:ring-[#0299A7]"
-                    />
-                  </div>
+                    <div className="w-full sm:w-1/4">
+                      <label className="block text-[10px] font-bold text-[#037A86] uppercase">Admin Price/Head (₦)</label>
+                      <input
+                        type="number"
+                        step={1000}
+                        value={cat.customPricePerHead !== undefined ? cat.customPricePerHead : selectedP?.annualBaseRate || 65000}
+                        onChange={(e) => updateCategory(idx, 'customPricePerHead', parseFloat(e.target.value) || 0)}
+                        className="w-full px-2.5 py-1.5 border border-[#0299A7] bg-[#E0F2F4] text-[#037A86] rounded-md text-xs font-bold font-mono focus:ring-2 focus:ring-[#0299A7]"
+                      />
+                    </div>
 
-                  {categories.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeCategory(idx)}
-                      className="p-2 text-[#D66F66] hover:text-white hover:bg-[#D66F66] bg-[#FCE8E6] rounded-lg mt-3 sm:mt-4 transition-all"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
+                    <div className="w-full sm:w-1/6">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase">Headcount</label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={cat.staffCount}
+                        onChange={(e) => updateCategory(idx, 'staffCount', parseInt(e.target.value) || 0)}
+                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-xs font-bold focus:ring-2 focus:ring-[#0299A7]"
+                      />
+                    </div>
+
+                    {categories.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeCategory(idx)}
+                        className="p-2 text-[#D66F66] hover:text-white hover:bg-[#D66F66] bg-[#FCE8E6] rounded-lg mt-3 sm:mt-4 transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

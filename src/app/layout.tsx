@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Mitera Health HMO - Broker Relationship Management (BRM)",
-  description: "National Health Insurance Authority (NHIA) Accredited HMO Broker & Partner Portal",
+  description: "Mitera Health HMO - Broker & Partner Relationship Portal",
 };
 
 export default function RootLayout({

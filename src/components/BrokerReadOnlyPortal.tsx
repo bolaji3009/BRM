@@ -164,8 +164,8 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
           </div>
 
           <div className="p-3.5 bg-[#F2F2F0] rounded-xl border border-slate-200">
-            <p className="text-[10px] text-slate-500 font-bold uppercase">National Identity / TIN</p>
-            <p className="font-mono font-bold text-slate-900 mt-1">{broker.nin || broker.taxIdNumber || 'TIN-98214019-0001'}</p>
+            <p className="text-[10px] text-slate-500 font-bold uppercase">Tax Identification Number (TIN)</p>
+            <p className="font-mono font-bold text-slate-900 mt-1">{broker.taxIdNumber || 'TIN-98214019-0001'}</p>
           </div>
 
           <div className="p-3.5 bg-[#F2F2F0] rounded-xl border border-slate-200">

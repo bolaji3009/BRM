@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   BRM Portal
                 </span>
               </div>
-              <p className="text-xs text-teal-100/80 font-medium hidden sm:block">National Health Insurance Authority (NHIA) Partner Hub</p>
+              <p className="text-xs text-teal-100/80 font-medium hidden sm:block">HMO Broker & Partner Relationship Hub</p>
             </div>
           </div>
 

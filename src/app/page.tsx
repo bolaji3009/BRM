@@ -45,7 +45,6 @@ export default function Home() {
       rcNumber: newBrokerData.rcNumber || '',
       naicomLicenseNumber: newBrokerData.naicomLicenseNumber || 'NAICOM/BRK/2024/099',
       naicomExpiryDate: newBrokerData.naicomExpiryDate || '2026-12-31',
-      nhiaAccreditationNo: newBrokerData.nhiaAccreditationNo || 'NHIA/ACT/9900',
       taxIdNumber: newBrokerData.taxIdNumber || '',
       vatCompliant: newBrokerData.vatCompliant || false,
       bankName: newBrokerData.bankName || 'GTBank',

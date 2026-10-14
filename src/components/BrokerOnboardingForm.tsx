@@ -25,10 +25,8 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
     rcNumber: broker.rcNumber || '',
     naicomLicenseNumber: broker.naicomLicenseNumber || '',
     naicomExpiryDate: broker.naicomExpiryDate || '',
-    nhiaAccreditationNo: broker.nhiaAccreditationNo || '',
     taxIdNumber: broker.taxIdNumber || '',
     vatCompliant: broker.vatCompliant || false,
-    nin: broker.nin || '',
     bankName: broker.bankName || 'Guaranty Trust Bank (GTBank)',
     accountNumber: broker.accountNumber || '',
     accountName: broker.accountName || '',
@@ -82,7 +80,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
           <div>
             <div className="inline-flex items-center space-x-2 bg-[#E0F2F4] text-[#0299A7] text-xs font-bold px-3 py-1 rounded-full mb-3">
               <ShieldCheck className="w-4 h-4 text-[#0299A7]" />
-              <span>NHIA & NAICOM Regulatory Compliance Portal</span>
+              <span>NAICOM Regulatory Compliance Portal</span>
             </div>
             <h2 className="text-2xl font-extrabold tracking-tight text-[#22282B]">
               Broker Onboarding & Verification (KYC)
@@ -196,19 +194,6 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
               </div>
             )}
 
-            {!isRetail && (
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">NHIA Accreditation Number</label>
-                <input
-                  type="text"
-                  name="nhiaAccreditationNo"
-                  value={formData.nhiaAccreditationNo}
-                  onChange={handleInputChange}
-                  placeholder="NHIA/ACT/9902"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none"
-                />
-              </div>
-            )}
           </div>
         </div>
 
@@ -281,19 +266,6 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none font-mono"
               />
             </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">National Identity Number (NIN)</label>
-              <input
-                type="text"
-                name="nin"
-                value={formData.nin}
-                onChange={handleInputChange}
-                maxLength={11}
-                placeholder="10293847561"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#0299A7] focus:outline-none font-mono"
-              />
-            </div>
           </div>
         </div>
 
@@ -359,7 +331,7 @@ export const BrokerOnboardingForm: React.FC<BrokerOnboardingFormProps> = ({
               className="mt-1 w-4 h-4 text-[#0299A7] border-slate-300 rounded focus:ring-[#0299A7]"
             />
             <label htmlFor="ndpaConsent" className="text-xs text-slate-800 leading-relaxed">
-              <span className="font-extrabold text-[#037A86]">NDPA 2023 Data Protection Consent:</span> I hereby consent to Mitera Health Limited processing my corporate and personally identifiable information (PII) strictly for regulatory compliance vetting with NHIA, NAICOM, FIRS, and commission payout setup under the Nigeria Data Protection Act 2023.
+              <span className="font-extrabold text-[#037A86]">NDPA 2023 Data Protection Consent:</span> I hereby consent to Mitera Health Limited processing my corporate and personally identifiable information (PII) strictly for regulatory compliance vetting with NAICOM, FIRS, and commission payout setup under the Nigeria Data Protection Act 2023.
             </label>
           </div>
         </div>

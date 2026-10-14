@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { BrokerData, DocumentData, CommissionData, QuoteDealData, PlanData, HospitalData, EngagementData, mockDb } from '@/lib/mockDb';
 import { QuoteGenerator } from '@/components/QuoteGenerator';
-import { HospitalSearchModule } from '@/components/HospitalSearchModule';
 import { PipelineTracker } from '@/components/PipelineTracker';
 import { CommissionLedger } from '@/components/CommissionLedger';
 
@@ -47,19 +46,49 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onAddEngagement,
   onUpdateDealStage,
 }) => {
-  const [activeTab, setActiveTab] = useState<'QUEUE' | 'BROKERS' | 'AGREEMENTS' | 'REFERRALS' | 'BATCHES' | 'DISPUTES' | 'QUOTE' | 'HOSPITALS' | 'PIPELINE' | 'COMMISSIONS'>('QUEUE');
+  const [activeTab, setActiveTab] = useState<'QUEUE' | 'BROKERS' | 'AGREEMENTS' | 'REFERRALS' | 'BATCHES' | 'DISPUTES' | 'QUOTE' | 'PIPELINE' | 'COMMISSIONS'>('QUEUE');
   const [selectedBroker, setSelectedBroker] = useState<BrokerData | null>(brokers[1] || brokers[0] || null);
   const [selectedTier, setSelectedTier] = useState<string>('CORPORATE_BROKER');
 
+  // In-App Interactive Modal for Corporate Agreement
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [agrForm, setAgrForm] = useState({
+    brokerId: brokers[0]?.id || '',
+    clientName: 'Dangote Foods Plc',
+    agreedRate: 10.0,
+    brokerSplitPct: 100,
+    effectiveFrom: '2026-01-01',
+    effectiveTo: '2026-12-31',
+    terms: 'Standard Corporate Brokerage Agreement with 10% rate split and 30-day payment term.',
+  });
+
+  const handleSaveAgreement = (e: React.FormEvent) => {
+    e.preventDefault();
+    const selectedB = brokers.find((b) => b.id === agrForm.brokerId) || brokers[0];
+    mockDb.corporateAgreements.push({
+      id: `agr-${Date.now()}`,
+      agreementNumber: `MTR-AGR-2026-0${mockDb.corporateAgreements.length + 1}`,
+      brokerId: selectedB.id,
+      brokerName: selectedB.companyName,
+      clientName: agrForm.clientName,
+      agreedRate: Number(agrForm.agreedRate),
+      brokerSplitPct: Number(agrForm.brokerSplitPct),
+      effectiveFrom: agrForm.effectiveFrom,
+      effectiveTo: agrForm.effectiveTo,
+      status: 'APPROVED',
+    });
+    setShowAgreementModal(false);
+    alert('New Corporate Agreement created and saved successfully!');
+  };
+
   const pendingBrokers = brokers.filter((b) => b.status === 'PENDING_VERIFICATION' || b.status === 'DRAFT');
 
-  const exportNhiaReturnsCsv = () => {
+  const exportRegulatoryReturnsCsv = () => {
     const headers = [
       'Broker Code',
       'Company Name',
       'RC Number',
       'NAICOM License',
-      'NHIA Accreditation',
       'TIN',
       'Status',
       'Tier Level',
@@ -72,7 +101,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       `"${b.companyName}"`,
       b.rcNumber || 'N/A',
       b.naicomLicenseNumber || 'N/A',
-      b.nhiaAccreditationNo || 'N/A',
       b.taxIdNumber || 'N/A',
       b.status,
       b.tierLevel,
@@ -84,7 +112,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `NHIA_Monthly_Broker_Returns_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `Regulatory_Broker_Returns_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -103,16 +131,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
             <h2 className="text-2xl font-extrabold tracking-tight text-[#22282B]">Broker Governance, SBUs & Settlement Hub</h2>
             <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-              Govern Corporate agreements, Retail MApp referral codes, commission batches, and regulatory NHIA monthly returns.
+              Govern Corporate agreements, Retail MApp referral codes, commission batches, and regulatory monthly returns.
             </p>
           </div>
 
           <button
-            onClick={exportNhiaReturnsCsv}
+            onClick={exportRegulatoryReturnsCsv}
             className="px-4 py-2.5 bg-[#0299A7] hover:bg-[#037A86] text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center space-x-2 shrink-0 transition-all"
           >
             <Download className="w-4 h-4" />
-            <span>Export NHIA Returns CSV</span>
+            <span>Export Regulatory Returns CSV</span>
           </button>
         </div>
 
@@ -188,16 +216,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               Quote Generator
-            </button>
-            <button
-              onClick={() => setActiveTab('HOSPITALS')}
-              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all ${
-                activeTab === 'HOSPITALS'
-                  ? 'bg-[#0299A7] text-white shadow-xs'
-                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              Hospitals Directory
             </button>
             <button
               onClick={() => setActiveTab('PIPELINE')}
@@ -380,30 +398,127 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <p className="text-xs text-slate-600">Effective-dated brokerage rate agreements linked to corporate clients and policy groups.</p>
               </div>
               <button
-                onClick={() => {
-                  const client = prompt('Enter Corporate Client Name:', 'Dangote Foods Plc');
-                  if (client) {
-                    mockDb.corporateAgreements.push({
-                      id: `agr-${Date.now()}`,
-                      agreementNumber: `MTR-AGR-2026-0${mockDb.corporateAgreements.length + 1}`,
-                      brokerId: brokers[0].id,
-                      brokerName: brokers[0].companyName,
-                      clientName: client,
-                      agreedRate: 10.0,
-                      brokerSplitPct: 100,
-                      effectiveFrom: '2026-01-01',
-                      effectiveTo: '2026-12-31',
-                      status: 'APPROVED',
-                    });
-                    alert('Corporate agreement configured and activated!');
-                  }
-                }}
-                className="px-4 py-2 bg-[#0299A7] hover:bg-[#037A86] text-white font-bold text-xs rounded-xl shadow flex items-center space-x-1.5"
+                onClick={() => setShowAgreementModal(true)}
+                className="px-4 py-2 bg-[#0299A7] hover:bg-[#037A86] text-white font-bold text-xs rounded-xl shadow flex items-center space-x-1.5 transition-all"
               >
                 <Plus className="w-4 h-4" />
                 <span>Configure Corporate Agreement</span>
               </button>
             </div>
+
+            {/* Interactive In-App Agreement Configuration Modal */}
+            {showAgreementModal && (
+              <div className="p-6 bg-[#E0F2F4] border border-teal-200 rounded-2xl space-y-4 mb-6 shadow-md">
+                <div className="flex items-center justify-between border-b border-teal-200 pb-3">
+                  <h4 className="font-extrabold text-[#037A86] text-base">In-App Corporate Agreement Configuration</h4>
+                  <button
+                    onClick={() => setShowAgreementModal(false)}
+                    className="text-xs font-bold text-slate-500 hover:text-slate-800"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveAgreement} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Select Corporate Broker Partner</label>
+                    <select
+                      value={agrForm.brokerId}
+                      onChange={(e) => setAgrForm({ ...agrForm, brokerId: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                    >
+                      {brokers.filter((b) => b.brokerType === 'CORPORATE' || b.status === 'ACTIVE').map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.companyName} ({b.brokerCode})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Corporate Client / Account Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={agrForm.clientName}
+                      onChange={(e) => setAgrForm({ ...agrForm, clientName: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Agreed Commission Rate (%)</label>
+                    <input
+                      type="number"
+                      step={0.5}
+                      required
+                      value={agrForm.agreedRate}
+                      onChange={(e) => setAgrForm({ ...agrForm, agreedRate: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold font-mono focus:ring-2 focus:ring-[#0299A7]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Broker Split Share (%)</label>
+                    <input
+                      type="number"
+                      required
+                      value={agrForm.brokerSplitPct}
+                      onChange={(e) => setAgrForm({ ...agrForm, brokerSplitPct: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-bold font-mono focus:ring-2 focus:ring-[#0299A7]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Effective Start Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={agrForm.effectiveFrom}
+                      onChange={(e) => setAgrForm({ ...agrForm, effectiveFrom: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Effective End Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={agrForm.effectiveTo}
+                      onChange={(e) => setAgrForm({ ...agrForm, effectiveTo: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2 lg:col-span-3">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">SLA Guidelines & Terms</label>
+                    <input
+                      type="text"
+                      value={agrForm.terms}
+                      onChange={(e) => setAgrForm({ ...agrForm, terms: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2 lg:col-span-3 flex justify-end space-x-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowAgreementModal(false)}
+                      className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 bg-[#0299A7] hover:bg-[#037A86] text-white text-xs font-bold rounded-xl shadow-md"
+                    >
+                      Save & Activate Corporate Agreement
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
@@ -587,8 +702,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             broker={brokers[0]}
             onCreateDeal={onCreateDeal || (() => {})}
           />
-        ) : activeTab === 'HOSPITALS' ? (
-          <HospitalSearchModule hospitals={hospitals} />
         ) : activeTab === 'PIPELINE' ? (
           <PipelineTracker
             deals={deals}
