@@ -66,6 +66,57 @@ export interface PaymentBatchData {
   paymentReference?: string;
 }
 
+export interface CommissionCalculationStep {
+  stepNumber: number;
+  description: string;
+  formula: string;
+  valueInKobo: number;
+  formattedValue: string;
+}
+
+export interface CommissionCalculationBreakdown {
+  ruleVersion: string;
+  preundedBaseKobo: number;
+  nonCommissionableExclusionsKobo: number;
+  netBaseKobo: number;
+  appliedPercentage: number;
+  grossCommissionKobo: number;
+  whtRatePct: number;
+  whtDeductionKobo: number;
+  netCommissionPayableKobo: number;
+  steps: CommissionCalculationStep[];
+}
+
+export interface MakerCheckerRequest {
+  id: string;
+  requestType: 'BANK_DETAIL_CHANGE' | 'HIGH_VALUE_AGREEMENT' | 'MANUAL_ADJUSTMENT' | 'BROKER_ACTIVATION';
+  brokerId: string;
+  brokerName: string;
+  requestedBy: string;
+  requestedAt: string;
+  oldValue: string;
+  newValue: string;
+  status: 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED';
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reason?: string;
+}
+
+export interface AuditEventData {
+  id: string;
+  timestamp: string;
+  actorId: string;
+  actorName: string;
+  actorRole: string;
+  action: string;
+  entityType: 'BROKER' | 'AGREEMENT' | 'COMMISSION' | 'REFERRAL_CODE' | 'BATCH' | 'DISPUTE';
+  entityId: string;
+  ruleVersion?: string;
+  previousState?: string;
+  newState: string;
+  ipAddress: string;
+}
+
 export interface DisputeData {
   id: string;
   disputeNumber: string;
@@ -75,7 +126,8 @@ export interface DisputeData {
   category: 'MISSING_ATTRIBUTION' | 'INCORRECT_RATE' | 'WHT_CALCULATION' | 'DELAYED_PAYOUT';
   explanation: string;
   status: 'OPEN' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED';
-  adjustmentAmount?: number;
+  adjustmentAmountKobo?: number;
+  linkedAdjustmentType?: 'CREDIT' | 'DEBIT';
   resolutionNotes?: string;
   createdAt: string;
 }

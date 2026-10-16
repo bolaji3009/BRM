@@ -46,7 +46,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onAddEngagement,
   onUpdateDealStage,
 }) => {
-  const [activeTab, setActiveTab] = useState<'QUEUE' | 'BROKERS' | 'AGREEMENTS' | 'REFERRALS' | 'BATCHES' | 'DISPUTES' | 'QUOTE' | 'PIPELINE' | 'COMMISSIONS'>('QUEUE');
+  const [activeTab, setActiveTab] = useState<'QUEUE' | 'BROKERS' | 'AGREEMENTS' | 'REFERRALS' | 'MAKERCHECKER' | 'BATCHES' | 'DISPUTES' | 'AUDIT' | 'QUOTE' | 'PIPELINE' | 'COMMISSIONS'>('QUEUE');
   const [selectedBroker, setSelectedBroker] = useState<BrokerData | null>(brokers[1] || brokers[0] || null);
   const [selectedTier, setSelectedTier] = useState<string>('CORPORATE_BROKER');
 
@@ -188,6 +188,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               Retail Codes
             </button>
             <button
+              onClick={() => setActiveTab('MAKERCHECKER')}
+              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'MAKERCHECKER'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Maker-Checker ({mockDb.makerCheckerRequests.filter((r) => r.status === 'PENDING_REVIEW').length})
+            </button>
+            <button
               onClick={() => setActiveTab('BATCHES')}
               className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all ${
                 activeTab === 'BATCHES'
@@ -206,6 +216,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }`}
             >
               Disputes ({mockDb.disputes.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('AUDIT')}
+              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all ${
+                activeTab === 'AUDIT'
+                  ? 'bg-[#0299A7] text-white shadow-xs'
+                  : 'bg-[#F2F2F0] text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              Audit Trail ({mockDb.auditEvents.length})
             </button>
             <button
               onClick={() => setActiveTab('QUOTE')}
@@ -557,6 +577,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
+                <div className="inline-flex items-center space-x-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-1">
+                  <span>Anti-Self-Referral Safeguard Active • NUBAN & Device ID Hash Match Engine</span>
+                </div>
                 <h3 className="text-lg font-bold text-[#037A86]">Retail SBU Referral Code Management</h3>
                 <p className="text-xs text-slate-600">Track MApp referral links, enrolment conversion attribution, and anti-self-referral checks.</p>
               </div>
@@ -617,6 +640,94 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <p className="font-bold text-[#0299A7] mt-0.5 font-mono">₦{ref.totalCommissionEarned.toLocaleString()}</p>
                     </div>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : activeTab === 'MAKERCHECKER' ? (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <h3 className="text-lg font-bold text-[#037A86]">Maker-Checker Dual Approval Queue</h3>
+                <p className="text-xs text-slate-600">Mandatory dual governance for bank detail changes, high-value corporate rate overrides, and manual adjustments.</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {mockDb.makerCheckerRequests.map((req) => (
+                <div key={req.id} className="p-5 border border-slate-200 rounded-2xl bg-[#F2F2F0] space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <div>
+                      <span className="text-[10px] bg-[#E0F2F4] text-[#037A86] font-bold px-2.5 py-0.5 rounded-full">
+                        {req.requestType.replace(/_/g, ' ')}
+                      </span>
+                      <h4 className="font-extrabold text-[#22282B] text-sm mt-1">{req.brokerName}</h4>
+                    </div>
+
+                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                      req.status === 'PENDING_REVIEW'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                        : 'bg-[#E0F2F4] text-[#037A86]'
+                    }`}>
+                      {req.status}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600">Requested by: <strong>{req.requestedBy}</strong> on {new Date(req.requestedAt).toLocaleString()}</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-white p-3 rounded-xl border border-slate-200">
+                    <div>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase">Current Value</p>
+                      <p className="font-mono font-medium text-slate-700">{req.oldValue}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-[#037A86] font-bold uppercase">Proposed New Value</p>
+                      <p className="font-mono font-bold text-[#0299A7]">{req.newValue}</p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-600 italic">Reason: "{req.reason}"</p>
+
+                  {req.status === 'PENDING_REVIEW' && (
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button
+                        onClick={() => {
+                          req.status = 'APPROVED';
+                          req.reviewedBy = 'Dr. Temitope Adebayo (Compliance Checker)';
+                          req.reviewedAt = new Date().toISOString();
+                          mockDb.auditEvents.unshift({
+                            id: `aud-${Date.now()}`,
+                            timestamp: new Date().toISOString(),
+                            actorId: 'usr-admin-1',
+                            actorName: 'Dr. Temitope Adebayo',
+                            actorRole: 'HMO_ADMIN',
+                            action: `APPROVE_${req.requestType}`,
+                            entityType: 'BROKER',
+                            entityId: req.brokerId,
+                            previousState: req.oldValue,
+                            newState: req.newValue,
+                            ipAddress: '102.89.23.14',
+                          });
+                          alert('Maker-checker request approved and audit log recorded!');
+                        }}
+                        className="px-4 py-2 bg-[#0299A7] hover:bg-[#037A86] text-white font-bold text-xs rounded-xl shadow transition-all"
+                      >
+                        Approve & Execute Change
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          req.status = 'REJECTED';
+                          req.reviewedBy = 'Dr. Temitope Adebayo (Compliance Checker)';
+                          req.reviewedAt = new Date().toISOString();
+                          alert('Maker-checker request rejected!');
+                        }}
+                        className="px-4 py-2 bg-[#EF8E85] hover:bg-[#D66F66] text-[#22282B] hover:text-white font-bold text-xs rounded-xl shadow transition-all"
+                      >
+                        Reject Request
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -694,6 +805,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <p className="text-xs text-slate-600">{disp.explanation}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        ) : activeTab === 'AUDIT' ? (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <h3 className="text-lg font-bold text-[#037A86]">Immutable Governance & System Audit Trail</h3>
+                <p className="text-xs text-slate-600">Append-only log of all regulatory returns, agreement approvals, commission calculations, and maker-checker actions.</p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-600 font-bold uppercase">
+                    <th className="pb-3">Timestamp</th>
+                    <th className="pb-3">Actor</th>
+                    <th className="pb-3">Action</th>
+                    <th className="pb-3">Entity Type</th>
+                    <th className="pb-3">Rule Version</th>
+                    <th className="pb-3">Audit Details / State Change</th>
+                    <th className="pb-3">IP Address</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {mockDb.auditEvents.map((aud) => (
+                    <tr key={aud.id} className="hover:bg-slate-50">
+                      <td className="py-3 font-mono text-slate-600 text-[11px]">{new Date(aud.timestamp).toLocaleString()}</td>
+                      <td className="py-3 font-bold text-slate-900">{aud.actorName}</td>
+                      <td className="py-3 font-mono font-bold text-[#037A86]">{aud.action}</td>
+                      <td className="py-3 font-semibold text-slate-700">{aud.entityType}</td>
+                      <td className="py-3 font-mono text-xs text-[#0299A7] font-bold">{aud.ruleVersion || 'v2026.1.0'}</td>
+                      <td className="py-3 text-slate-800 max-w-xs truncate" title={aud.newState}>{aud.newState}</td>
+                      <td className="py-3 font-mono text-slate-500">{aud.ipAddress}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         ) : activeTab === 'QUOTE' ? (

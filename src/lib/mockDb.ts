@@ -10,6 +10,8 @@ import {
   CorporateAgreementData,
   PaymentBatchData,
   DisputeData,
+  MakerCheckerRequest,
+  AuditEventData,
 } from './types';
 
 export interface UserData {
@@ -559,6 +561,78 @@ class MockDatabase {
       isVerified: true,
       watermarked: true,
       createdAt: '2026-01-10T09:15:00.000Z',
+    },
+  ];
+
+  makerCheckerRequests: MakerCheckerRequest[] = [
+    {
+      id: 'mc-101',
+      requestType: 'BANK_DETAIL_CHANGE',
+      brokerId: 'brk-apex-1',
+      brokerName: 'Apex Insurance Brokers Ltd',
+      requestedBy: 'Chidi Okonkwo (Broker Admin)',
+      requestedAt: '2026-03-24T11:20:00.000Z',
+      oldValue: 'GTBank - 0123456789 (Apex Insurance Brokers)',
+      newValue: 'Zenith Bank - 1019283746 (Apex Insurance Brokers)',
+      status: 'PENDING_REVIEW',
+      reason: 'Corporate account migration to Zenith Corporate Banking',
+    },
+    {
+      id: 'mc-102',
+      requestType: 'HIGH_VALUE_AGREEMENT',
+      brokerId: 'brk-apex-1',
+      brokerName: 'Apex Insurance Brokers Ltd',
+      requestedBy: 'Sales Lead (Corporate SBU)',
+      requestedAt: '2026-03-23T16:45:00.000Z',
+      oldValue: 'Standard Tier Rate (5.0%)',
+      newValue: 'Custom Agreed Rate (12.5%) for Dangote Foods (5000 lives)',
+      status: 'PENDING_REVIEW',
+      reason: 'Institutional Account rate override - exceeds standard 10% threshold',
+    },
+  ];
+
+  auditEvents: AuditEventData[] = [
+    {
+      id: 'aud-201',
+      timestamp: '2026-03-24T12:00:00.000Z',
+      actorId: 'usr-admin-1',
+      actorName: 'Dr. Temitope Adebayo',
+      actorRole: 'HMO_ADMIN',
+      action: 'APPROVE_AGREEMENT',
+      entityType: 'AGREEMENT',
+      entityId: 'agr-1',
+      ruleVersion: 'v2026.1.0',
+      previousState: 'DRAFT',
+      newState: 'APPROVED (Agreed Rate: 10.0%, Effective: 2026-01-01 to 2026-12-31)',
+      ipAddress: '102.89.23.14',
+    },
+    {
+      id: 'aud-202',
+      timestamp: '2026-03-20T16:00:00.000Z',
+      actorId: 'usr-admin-1',
+      actorName: 'Dr. Temitope Adebayo',
+      actorRole: 'HMO_ADMIN',
+      action: 'DISBURSE_PAYMENT_BATCH',
+      entityType: 'BATCH',
+      entityId: 'batch-1',
+      ruleVersion: 'v2026.1.0',
+      previousState: 'APPROVED',
+      newState: 'DISBURSED (Net Disbursement: ₦2,450,762.50, Ref: GTB-DISB-99210)',
+      ipAddress: '102.89.23.14',
+    },
+    {
+      id: 'aud-203',
+      timestamp: '2026-03-15T10:00:00.000Z',
+      actorId: 'SYSTEM_ENGINE',
+      actorName: 'Mitera Commission Engine',
+      actorRole: 'SYSTEM',
+      action: 'CALCULATE_COMMISSION',
+      entityType: 'COMMISSION',
+      entityId: 'comm-1',
+      ruleVersion: 'v2026.1.0',
+      previousState: 'NONE',
+      newState: 'ACCRUED (Eligible Premium: ₦25,797,500.00, Gross Commission: ₦2,579,750.00)',
+      ipAddress: '127.0.0.1',
     },
   ];
 }
