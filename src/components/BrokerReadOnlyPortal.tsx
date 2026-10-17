@@ -13,6 +13,7 @@ import {
   Copy,
 } from 'lucide-react';
 import { BrokerData, QuoteDealData, CommissionData, mockDb } from '@/lib/mockDb';
+import { CommissionLedger } from '@/components/CommissionLedger';
 
 interface BrokerReadOnlyPortalProps {
   broker: BrokerData;
@@ -148,6 +149,15 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
           </p>
           <p className="text-[11px] text-slate-500 mt-1">{isRetail ? 'MApp Enrolment Rule' : 'Negotiated Agreement'}</p>
         </div>
+      </div>
+
+      {/* Interactive Broker Commission Wallet & Dispute Filing Section */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-xs">
+        <CommissionLedger
+          commissions={brokerCommissions.length > 0 ? brokerCommissions : commissions}
+          broker={broker}
+          isBrokerView={true}
+        />
       </div>
 
       {/* Account Verification Profile Summary */}

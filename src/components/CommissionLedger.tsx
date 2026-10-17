@@ -14,9 +14,10 @@ import { CommissionCalculationBreakdown } from '@/lib/types';
 interface CommissionLedgerProps {
   commissions: CommissionData[];
   broker: BrokerData;
+  isBrokerView?: boolean;
 }
 
-export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions, broker }) => {
+export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions, broker, isBrokerView = false }) => {
   const [selectedCommission, setSelectedCommission] = useState<CommissionData | null>(null);
   const [showExplanationModal, setShowExplanationModal] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
@@ -202,13 +203,15 @@ export const CommissionLedger: React.FC<CommissionLedgerProps> = ({ commissions,
           </div>
 
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setShowDisputeModal(true)}
-              className="px-4 py-2.5 bg-[#EF8E85] hover:bg-[#D66F66] text-[#22282B] hover:text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
-            >
-              <AlertTriangle className="w-4 h-4" />
-              <span>Raise Adjustment / Dispute</span>
-            </button>
+            {isBrokerView && (
+              <button
+                onClick={() => setShowDisputeModal(true)}
+                className="px-4 py-2.5 bg-[#EF8E85] hover:bg-[#D66F66] text-[#22282B] hover:text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                <span>Raise Adjustment / Dispute</span>
+              </button>
+            )}
 
             <button
               onClick={exportStatementPdf}

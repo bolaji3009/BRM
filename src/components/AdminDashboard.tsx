@@ -787,22 +787,123 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
-                <h3 className="text-lg font-bold text-[#037A86]">Disputes & Adjustment Log</h3>
-                <p className="text-xs text-slate-600">Review broker attribution, rate, or payout disputes with append-only financial adjustments.</p>
+                <div className="inline-flex items-center space-x-1.5 bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-1">
+                  <span>Backend Master Resolution Queue • Role: HMO Admin (Resolver)</span>
+                </div>
+                <h3 className="text-lg font-bold text-[#037A86]">Broker Commission Disputes & Financial Adjustments</h3>
+                <p className="text-xs text-slate-600">Review broker-filed dispute claims, verify calculation traces, and issue linked credit/debit adjustments.</p>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {mockDb.disputes.map((disp) => (
-                <div key={disp.id} className="p-5 border border-slate-200 rounded-2xl bg-white shadow-xs space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-[#037A86] text-xs">{disp.disputeNumber}</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FCE8E6] text-[#D66F66]">
+                <div key={disp.id} className="p-5 border border-slate-200 rounded-2xl bg-[#F2F2F0] shadow-xs space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <div>
+                      <span className="font-mono font-bold text-[#037A86] text-xs">{disp.disputeNumber}</span>
+                      <h4 className="font-extrabold text-[#22282B] text-sm mt-0.5">{disp.brokerName}</h4>
+                    </div>
+
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      disp.status === 'OPEN' || disp.status === 'IN_REVIEW'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                        : 'bg-[#E0F2F4] text-[#037A86]'
+                    }`}>
                       {disp.status}
                     </span>
                   </div>
-                  <p className="text-xs font-bold text-slate-900">Broker: {disp.brokerName} ({disp.category})</p>
-                  <p className="text-xs text-slate-600">{disp.explanation}</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-white p-3 rounded-xl border border-slate-200">
+                    <div>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase">Dispute Category</p>
+                      <p className="font-bold text-slate-900 mt-0.5">{disp.category.replace(/_/g, ' ')}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase">Client / Code Reference</p>
+                      <p className="font-mono text-slate-800 mt-0.5">{disp.clientOrCode}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-[#037A86] font-bold uppercase">Claimed Financial Adjustment</p>
+                      <p className="font-mono font-extrabold text-[#0299A7] mt-0.5">
+                        ₦{((disp.adjustmentAmountKobo || 1500000) / 100).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-700 bg-white p-3 rounded-xl border border-slate-200">
+                    <strong>Broker Evidence & Claim Details:</strong> "{disp.explanation}"
+                  </p>
+
+                  {(disp.status === 'OPEN' || disp.status === 'IN_REVIEW') && (
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+                      <h5 className="font-bold text-slate-900 text-xs">Admin Resolution Action</h5>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 mb-1">Mandatory Resolution Audit Notes</label>
+                        <input
+                          type="text"
+                          defaultValue="Verified enrolment receipt. Approved ₦15,000 credit adjustment entry in ledger."
+                          id={`res-notes-${disp.id}`}
+                          className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-[#0299A7]"
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-3 pt-1">
+                        <button
+                          onClick={() => {
+                            disp.status = 'APPROVED';
+                            const inputElem = document.getElementById(`res-notes-${disp.id}`) as HTMLInputElement;
+                            disp.resolutionNotes = inputElem?.value || 'Approved by HMO Admin';
+                            mockDb.auditEvents.unshift({
+                              id: `aud-${Date.now()}`,
+                              timestamp: new Date().toISOString(),
+                              actorId: 'usr-admin-1',
+                              actorName: 'Dr. Temitope Adebayo',
+                              actorRole: 'HMO_ADMIN',
+                              action: 'RESOLVE_DISPUTE_APPROVED',
+                              entityType: 'DISPUTE',
+                              entityId: disp.id,
+                              newState: `APPROVED (Adjustment: ₦${((disp.adjustmentAmountKobo || 1500000) / 100).toLocaleString()} Linked Credit Entry Created)`,
+                              ipAddress: '102.89.23.14',
+                            });
+                            alert('Dispute APPROVED! An append-only credit adjustment entry has been issued in the commission ledger.');
+                          }}
+                          className="px-4 py-2 bg-[#0299A7] hover:bg-[#037A86] text-white font-bold text-xs rounded-xl shadow transition-all"
+                        >
+                          Approve & Issue Credit Adjustment
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            disp.status = 'REJECTED';
+                            const inputElem = document.getElementById(`res-notes-${disp.id}`) as HTMLInputElement;
+                            disp.resolutionNotes = inputElem?.value || 'Rejected after audit verification';
+                            mockDb.auditEvents.unshift({
+                              id: `aud-${Date.now()}`,
+                              timestamp: new Date().toISOString(),
+                              actorId: 'usr-admin-1',
+                              actorName: 'Dr. Temitope Adebayo',
+                              actorRole: 'HMO_ADMIN',
+                              action: 'RESOLVE_DISPUTE_REJECTED',
+                              entityType: 'DISPUTE',
+                              entityId: disp.id,
+                              newState: 'REJECTED (System calculation verified accurate)',
+                              ipAddress: '102.89.23.14',
+                            });
+                            alert('Dispute REJECTED and closed in master resolution queue.');
+                          }}
+                          className="px-4 py-2 bg-[#EF8E85] hover:bg-[#D66F66] text-[#22282B] hover:text-white font-bold text-xs rounded-xl shadow transition-all"
+                        >
+                          Reject Dispute Claim
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {disp.status === 'APPROVED' && (
+                    <div className="p-3 bg-[#E0F2F4] border border-teal-200 rounded-xl text-xs text-[#037A86]">
+                      <strong>Resolution Notes:</strong> {disp.resolutionNotes || 'Approved with linked credit adjustment entry.'}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
