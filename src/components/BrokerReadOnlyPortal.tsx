@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ShieldCheck,
   UserCheck,
@@ -11,9 +11,9 @@ import {
   Award,
   Share2,
   Copy,
+  AlertTriangle,
 } from 'lucide-react';
 import { BrokerData, QuoteDealData, CommissionData, mockDb } from '@/lib/mockDb';
-import { CommissionLedger } from '@/components/CommissionLedger';
 
 interface BrokerReadOnlyPortalProps {
   broker: BrokerData;
@@ -26,6 +26,14 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
   deals,
   commissions,
 }) => {
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [disputeForm, setDisputeForm] = useState({
+    category: 'MISSING_ATTRIBUTION' as const,
+    clientOrCode: broker.brokerType === 'RETAIL' ? 'MAPP-RETAIL-ENROLMENT' : 'Dangote Foods Account',
+    explanation: 'Discrepancy in tier rate application or missing enrollee attribution.',
+    claimedAmount: 15000,
+  });
+
   const isRetail = broker.brokerType === 'RETAIL';
   const brokerDeals = deals.filter((d) => d.brokerId === broker.id || d.brokerName === broker.companyName);
   const brokerCommissions = commissions.filter((c) => c.brokerId === broker.id);
@@ -41,6 +49,26 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
     : (brokerDeals.reduce((sum, d) => sum + (d.totalPremium || 0), 0) || 38250000);
 
   const totalEarnedCommission = brokerCommissions.reduce((sum, c) => sum + c.netPayout, 0) || (isRetail ? 32400 : 2450762.5);
+
+  const handleRaiseDisputeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    mockDb.disputes.push({
+      id: `disp-${Date.now()}`,
+      disputeNumber: `DSP-2026-00${mockDb.disputes.length + 1}`,
+      brokerId: broker.id,
+      brokerName: broker.companyName,
+      clientOrCode: disputeForm.clientOrCode,
+      category: disputeForm.category,
+      explanation: disputeForm.explanation,
+      status: 'OPEN',
+      adjustmentAmountKobo: Math.round(disputeForm.claimedAmount * 100),
+      linkedAdjustmentType: 'CREDIT',
+      createdAt: new Date().toISOString(),
+    });
+
+    setShowDisputeModal(false);
+    alert('Dispute and Adjustment request successfully filed! Your claim has been routed to the HMO Backend Master Resolution Queue.');
+  };
 
   return (
     <div className="space-y-8 pb-12">
@@ -59,15 +87,26 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
             </p>
           </div>
 
-          <div className="bg-[#F2F2F0] p-4 rounded-xl border border-[#E5E5E3] min-w-[220px]">
-            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Account Status</p>
-            <div className="flex items-center space-x-2 mt-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#0299A7]" />
-              <span className="font-bold text-sm text-[#037A86] capitalize">{broker.status}</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {/* Dedicated Broker Dispute Action Button */}
+            <button
+              onClick={() => setShowDisputeModal(true)}
+              className="px-4 py-2.5 bg-[#EF8E85] hover:bg-[#D66F66] text-[#22282B] hover:text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-2 shrink-0 transition-all"
+            >
+              <AlertTriangle className="w-4 h-4" />
+              <span>Raise Adjustment / Dispute</span>
+            </button>
+
+            <div className="bg-[#F2F2F0] p-4 rounded-xl border border-[#E5E5E3] min-w-[200px]">
+              <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Account Status</p>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#0299A7]" />
+                <span className="font-bold text-sm text-[#037A86] capitalize">{broker.status}</span>
+              </div>
+              <p className="text-xs text-[#0299A7] mt-2 font-mono font-bold">
+                Broker Code: {broker.brokerCode || 'HMO-BRK-1001'}
+              </p>
             </div>
-            <p className="text-xs text-[#0299A7] mt-2 font-mono font-bold">
-              Broker Code: {broker.brokerCode || 'HMO-BRK-1001'}
-            </p>
           </div>
         </div>
       </div>
@@ -149,15 +188,6 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
           </p>
           <p className="text-[11px] text-slate-500 mt-1">{isRetail ? 'MApp Enrolment Rule' : 'Negotiated Agreement'}</p>
         </div>
-      </div>
-
-      {/* Interactive Broker Commission Wallet & Dispute Filing Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-xs">
-        <CommissionLedger
-          commissions={brokerCommissions.length > 0 ? brokerCommissions : commissions}
-          broker={broker}
-          isBrokerView={true}
-        />
       </div>
 
       {/* Account Verification Profile Summary */}
@@ -287,6 +317,92 @@ export const BrokerReadOnlyPortal: React.FC<BrokerReadOnlyPortalProps> = ({
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Raise Dispute / Adjustment Request Modal */}
+      {showDisputeModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+              <h3 className="text-lg font-extrabold text-[#037A86]">Raise Adjustment / Commission Dispute</h3>
+              <button
+                onClick={() => setShowDisputeModal(false)}
+                className="text-xs font-bold text-slate-500 hover:text-slate-800"
+              >
+                Close
+              </button>
+            </div>
+
+            <form onSubmit={handleRaiseDisputeSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Dispute Category</label>
+                <select
+                  value={disputeForm.category}
+                  onChange={(e) => setDisputeForm({ ...disputeForm, category: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                >
+                  <option value="MISSING_ATTRIBUTION">Missing Enrolment Attribution (MApp / Corporate)</option>
+                  <option value="INCORRECT_RATE">Incorrect Agreement Rate Applied</option>
+                  <option value="WHT_CALCULATION">FIRS WHT Calculation Discrepancy</option>
+                  <option value="DELAYED_PAYOUT">Delayed Settlement Payout</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Client Name / Referral Code Reference</label>
+                <input
+                  type="text"
+                  required
+                  value={disputeForm.clientOrCode}
+                  onChange={(e) => setDisputeForm({ ...disputeForm, clientOrCode: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Claimed Financial Adjustment Amount (₦)</label>
+                <input
+                  type="number"
+                  required
+                  value={disputeForm.claimedAmount}
+                  onChange={(e) => setDisputeForm({ ...disputeForm, claimedAmount: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold font-mono focus:ring-2 focus:ring-[#0299A7]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Detailed Explanation & Evidence Summary</label>
+                <textarea
+                  rows={3}
+                  required
+                  value={disputeForm.explanation}
+                  onChange={(e) => setDisputeForm({ ...disputeForm, explanation: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-[#0299A7]"
+                />
+              </div>
+
+              <div className="p-3 bg-[#E0F2F4] text-[#037A86] rounded-xl text-[11px] font-medium">
+                <strong>Immutable Adjustment Policy:</strong> Submitting a dispute will never overwrite or alter past transaction receipts. Approved resolutions will issue a separate, linked credit/debit adjustment entry in the ledger.
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowDisputeModal(false)}
+                  className="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#0299A7] text-white text-xs font-bold rounded-xl shadow-md hover:bg-[#037A86]"
+                >
+                  Submit Dispute & Log Adjustment
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
