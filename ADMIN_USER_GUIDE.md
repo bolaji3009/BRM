@@ -139,14 +139,17 @@ The **Mitera Health HMO Broker Relationship Management (BRM) System** is a regul
 
 ---
 
-#### 8. Financial Dispute & Adjustment Ledger
-* **Objective:** Log and resolve broker attribution, rate, or payout disputes.
-* **Access Navigation:** `Commissions Ledger` ➔ `Raise Adjustment / Dispute`.
+#### 8. Master Dispute Resolution Queue (HMO Admin Resolver SOP)
+* **Objective:** Act as the **Resolver** for broker-initiated financial, attribution, or rate dispute claims.
+* **Access Navigation:** `HMO Governance Portal` ➔ `Disputes` tab.
 * **Operating Procedure:**
-  1. Select the dispute category (*Missing Attribution*, *Incorrect Rate*, *WHT Discrepancy*).
-  2. Enter the claimed adjustment amount in Naira and provide justification.
-  3. Submit the claim.
-  4. **Immutable Ledger Rule:** Past transaction receipts are **never overwritten**. Approved resolutions issue a separate, linked credit/debit adjustment entry in the ledger.
+  1. **Dispute Filing:** Brokers file claims directly from their dashboard using the dedicated **Raise Adjustment / Dispute** button.
+  2. **Review Evidence:** Open the pending claim in the Master Dispute Resolution Queue to review the broker's evidence, claimed adjustment amount, and category (*Missing Attribution*, *Incorrect Rate*, *WHT Discrepancy*).
+  3. **Input Resolution Audit Notes:** Enter mandatory justification in the **Mandatory Resolution Audit Notes** field.
+  4. **Resolution Action:**
+     * Click **Approve & Issue Credit Adjustment** to approve the claim. The system creates an append-only linked credit entry in the commission ledger.
+     * Click **Reject Dispute Claim** to close the dispute if system calculation is verified accurate.
+  5. The action emits an immutable `RESOLVE_DISPUTE_APPROVED` or `RESOLVE_DISPUTE_REJECTED` audit event.
 
 ---
 
